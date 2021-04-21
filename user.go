@@ -5,24 +5,21 @@ import "time"
 // User domain model
 type User struct {
 	Base
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
 	Username  string `json:"username"`
-	Email     string `json:"-"`
-	Password  string `json:"password"`
+	Email     string `json:"email"`
+	// Password  string `json:"password"`
 
-	PhoneNumber string `json:"phone_number,omitempty"`
-	Address     string `json:"address,omitempty"`
+	// PhoneNumber string `json:"phone_number,omitempty"`
+	// Address     string `json:"address,omitempty"`
 
 	Active bool `json:"active"`
 
 	LastLogin          time.Time `json:"last_login,omitempty"`
 	LastPasswordChange time.Time `json:"last_password_change,omitempty"`
-
-	Token string `json:"-"`
-
-	// Role *Role `json:role"`
-
+	// Token string `json:"-"`
+	Role *Role `json:role"`
 	// RoleID AcessRole `json:"-"`
 }
 
