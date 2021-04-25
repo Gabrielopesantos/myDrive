@@ -7,6 +7,8 @@ https://medium.com/@benbjohnson/standard-package-layout-7cdbc8391fc1
 
 ## Other references:
 
+ * https://golangrepo.com/repo/sno6-gosane
+
 * https://medium.com/@benbjohnson/standard-package-layout-7cdbc8391fc1
 
 * https://github.com/golang-standards/project-layout
