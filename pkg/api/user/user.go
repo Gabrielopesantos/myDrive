@@ -4,8 +4,8 @@ package user
 import (
 	"github.com/labstack/echo/v4"
 
-	"githuv.com/gabrielopesantos/filesharing_api"
-	"githuv.com/gabrielopesantos/filesharing_api/pkg/utl/query"
+	"github.com/gabrielopesantos/filesharing_api"
+	"github.com/gabrielopesantos/filesharing_api/pkg/utl/query"
 )
 
 //Create: creates a new user account
