@@ -15,10 +15,7 @@
 vendor/
 media
 
-# Config files
-/config/configs.env
-/config/config_file.go
-
-# Environment files
+# others?
 .env
+pgdata/
 .vscode

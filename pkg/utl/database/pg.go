@@ -7,7 +7,7 @@ import (
 	_ "github.com/jackc/pgx/stdlib"
 	"github.com/jmoiron/sqlx"
 
-	"github.com/gabrielopesantos/filesharing_api/config"
+	"github.com/gabrielopesantos/fsharing-api/config"
 )
 
 const (

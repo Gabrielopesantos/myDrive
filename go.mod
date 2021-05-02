@@ -1,4 +1,4 @@
-module github.com/gabrielopesantos/filesharing_api
+module github.com/gabrielopesantos/fsharing-api
 
 go 1.16
 

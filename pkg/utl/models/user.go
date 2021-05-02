@@ -1,15 +1,14 @@
-package users
+package models
 
 import (
 	"strings"
 	"time"
 
-	base "github.com/gabrielopesantos/filesharing_api/pkg/utl/models"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {
-	base.Base
+	Base
 
 	FirstName string  `json:"firstName"`
 	LastName  string  `json:"lastName"`

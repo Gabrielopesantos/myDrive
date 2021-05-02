@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/gabrielopesantos/filesharing_api/pkg/utl/server"
+	"github.com/gabrielopesantos/fsharing-api/pkg/utl/server"
 )
 
 func main() {
