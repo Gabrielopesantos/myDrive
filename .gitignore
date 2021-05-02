@@ -12,7 +12,13 @@
 *.out
 
 # Dependency directories (remove the comment below to include it)
-# vendor/
+vendor/
+media
 
-# others?
+# Config files
+/config/configs.env
+/config/config_file.go
+
+# Environment files
 .env
+.vscode

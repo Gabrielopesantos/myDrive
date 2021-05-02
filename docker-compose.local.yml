@@ -1,0 +1,30 @@
+version: "3.8"
+
+services:
+    postgresql:
+      image: postgres:12-alpine
+      container_name: api_postgesql
+      ports:
+        - "5432:5432"
+      restart: always
+      environment:
+        - POSTGRES_USER=gabriel
+        - POSTGRES_PASSWORD=leirbag123
+        - POSTGRES_DB=database
+      volumes:
+        - ./pgdata:/var/lib/postgresql/data
+      networks:
+        - web_api
+    
+    adminer:
+      container_name: adminer
+      image: adminer
+      restart: always
+      ports:
+          - 7070:8080  
+      networks:
+        - web_api
+
+networks:
+  web_api:
+    driver: bridge
