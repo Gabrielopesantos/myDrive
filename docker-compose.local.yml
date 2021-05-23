@@ -5,23 +5,26 @@ services:
       image: postgres:12-alpine
       container_name: api_postgesql
       ports:
-        - "5432:5432"
+        - 5432:5432
       restart: always
       environment:
         - POSTGRES_USER=gabriel
         - POSTGRES_PASSWORD=leirbag123
-        - POSTGRES_DB=database
+        - POSTGRES_DB=users
       volumes:
         - ./pgdata:/var/lib/postgresql/data
       networks:
         - web_api
-    
-    adminer:
-      container_name: adminer
-      image: adminer
+
+    pgadminer4:
+      container_name: pgadminer4
+      image: dpage/pgadmin4
       restart: always
+      environment:
+        - PGADMIN_DEFAULT_EMAIL=email@email.com
+        - PGADMIN_DEFAULT_PASSWORD=email
       ports:
-          - 7070:8080  
+        - 80:80 # IF TLS IS DISABLED ELSE 443
       networks:
         - web_api
 
