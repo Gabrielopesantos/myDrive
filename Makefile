@@ -1,5 +1,18 @@
 .PHONY: local run build test
 
+# ==============================================================================
+# Go migrate postgresql
+force:
+	migrate -database postgresql://gabriel:leirbag123@localhost:5432/users?sslmode=disable -path migrations force 1
+
+version:
+	migrate -database postgresql://gabriel:leirbag123@localhost:5432/users?sslmode=disable -path migrations version 1
+
+migrate_up:
+	migrate -database postgresql://gabriel:leirbag123@localhost:5432/users?sslmode=disable -path migrations up 1
+
+migrate_down:
+	migrate -database postgresql://gabriel:leirbag123@localhost:5432/users?sslmode=disable -path migrations down 1
 
 # ==============================================================================
 # Docker compose commands
