@@ -3,7 +3,7 @@ package server_test
 import (
 	"testing"
 
-	"github.com/gabrielopesantos/fsharing-api/pkg/utl/server"
+	"github.com/gabrielopesantos/myDrive-api/pkg/utl/server"
 )
 
 func TestNew(t *testing.T) {

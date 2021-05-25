@@ -1,4 +1,4 @@
-module github.com/gabrielopesantos/fsharing-api
+module github.com/gabrielopesantos/myDrive-api
 
 go 1.16
 

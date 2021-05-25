@@ -28,8 +28,8 @@ func (s *Server) Run(addr string) error {
 func initEngine() (*gin.Engine, error) {
 
 	engine := gin.Default()
-	// engine.Use(gin.Logger())
-	// engine.Use(gin.Recovery())
+	engine.Use(gin.Logger())
+	engine.Use(gin.Recovery())
 
 	return engine, nil
 }

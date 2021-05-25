@@ -6,6 +6,7 @@ CREATE EXTENSION IF NOT EXISTS CITEXT;
 -- CREATE EXTENSION IF NOT EXISTS postgis_topology;
 
 
+-- CREATE TABLE IF NOT EXISTS (and remove first line)?
 CREATE TABLE users
 (
     user_id      UUID PRIMARY KEY                     DEFAULT uuid_generate_v4(),
@@ -21,3 +22,5 @@ CREATE TABLE users
     updated_at   TIMESTAMP WITH TIME ZONE             DEFAULT CURRENT_TIMESTAMP,
     login_date   TIMESTAMP(0) WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+-- https://github.com/golang-migrate/migrate/blob/v4.6.2/database/postgres/TUTORIAL.md

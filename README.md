@@ -1,18 +1,18 @@
 # API
 
-## Models in root?
-https://medium.com/@benbjohnson/standard-package-layout-7cdbc8391fc1
 
-### Currently based on [this](https://github.com/ribice/gorsk) implementation to get started with the base structure and learning concepts.
+##  References:
 
-## Other references:
+* https://github.com/AleksK1NG/Go-Clean-Architecture-REST-API
 
- * https://golangrepo.com/repo/sno6-gosane
+* https://github.com/ribice/gorsk
 
-* https://medium.com/@benbjohnson/standard-package-layout-7cdbc8391fc1
-
-* https://github.com/golang-standards/project-layout
+* https://golangrepo.com/repo/sno6-gosane
 
 * https://github.com/thockin/go-build-template
 
 * https://github.com/katzien/go-structure-examples
+
+* https://medium.com/@benbjohnson/standard-package-layout-7cdbc8391fc1
+
+* https://github.com/golang-standards/project-layout
