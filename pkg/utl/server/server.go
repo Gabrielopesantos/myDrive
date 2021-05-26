@@ -1,35 +1,50 @@
 package server
 
 import (
-	"github.com/gin-gonic/gin"
+	"context"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
+	"github.com/jmoiron/sqlx"
+	"github.com/labstack/echo/v4"
 )
 
 type Server struct {
-	Engine *gin.Engine
-	// Database *database.Database
-	// Config   appCfg.AppConfig
+	echo *echo.Echo
+	db   *sqlx.DB
 }
 
-func New() (*Server, error) {
-	engine, err := initEngine()
-	if err != nil {
-		return nil, err
+func NewServer(db *sqlx.DB) *Server {
+	return &Server{echo: echo.New(), db: db}
+}
+
+func (s *Server) Run() error {
+
+	server := &http.Server{
+		Addr: "8888",
 	}
 
-	return &Server{
-		Engine: engine,
-	}, nil
-}
+	go func() {
+		s.echo.Logger.Infof("Server is listening on port: 8888")
+		if err := s.echo.StartServer(server); err != nil {
+			s.echo.Logger.Fatalf("Error starting server", err)
+		}
+	}()
 
-func (s *Server) Run(addr string) error {
-	return s.Engine.Run(addr)
-}
+	if err := s.MapHandlers(s.echo); err != nil {
+		return err
+	}
 
-func initEngine() (*gin.Engine, error) {
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
 
-	engine := gin.Default()
-	engine.Use(gin.Logger())
-	engine.Use(gin.Recovery())
+	<-quit
 
-	return engine, nil
+	ctx, shutdown := context.WithTimeout(context.Background(), 5*time.Second)
+	defer shutdown()
+
+	return s.echo.Server.Shutdown(ctx)
 }

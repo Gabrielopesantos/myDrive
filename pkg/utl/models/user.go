@@ -17,6 +17,7 @@ type User struct {
 	Password  string  `json:"password"`
 	About     *string `json:"about"`
 	Role      *string `json:"role"`
+	Avatar    *string `json:"avatar"`
 
 	EmailVerified bool `json:"emailVerified"`
 	Active        bool `json:"active"`
