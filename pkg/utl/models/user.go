@@ -60,3 +60,7 @@ func (u *User) PrepareCreate() error {
 	}
 	return nil
 }
+
+type UserWithoutToken struct {
+	User *User
+}

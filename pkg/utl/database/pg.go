@@ -6,8 +6,6 @@ import (
 
 	_ "github.com/jackc/pgx/stdlib"
 	"github.com/jmoiron/sqlx"
-
-	"github.com/gabrielopesantos/myDrive-api/config"
 )
 
 const (
@@ -18,16 +16,16 @@ const (
 )
 
 // Return a Postgresql db instance
-func NewPsqlDB(c *config.Config) (*sqlx.DB, error) {
+func NewPsqlDB() (*sqlx.DB, error) {
 	dataSourceName := fmt.Sprintf("host=%s port=%s user=%s dbname=%s sslmode=disable password=%s",
-		c.Postgres.PostgresqlHost,
-		c.Postgres.PostgresqlPort,
-		c.Postgres.PostgresqlUser,
-		c.Postgres.PostgresqlDbname,
-		c.Postgres.PostgresqlPassword,
+		"localhost",
+		"5432",
+		"gabriel",
+		"users",
+		"leirbag123",
 	)
 
-	db, err := sqlx.Connect(c.Postgres.PgDriver, dataSourceName)
+	db, err := sqlx.Connect("pgx", dataSourceName)
 	if err != nil {
 		return nil, err
 	}

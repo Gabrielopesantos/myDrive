@@ -1,20 +1,26 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
+	postgres "github.com/gabrielopesantos/myDrive-api/pkg/utl/database"
 	"github.com/gabrielopesantos/myDrive-api/pkg/utl/server"
 )
 
 func main() {
-	Run()
-}
 
-func Run() {
-	srv, err := server.New()
+	psqlDB, err := postgres.NewPsqlDB()
 	if err != nil {
-		log.Fatalf("Error setting up server: %v\n", err)
+		log.Fatalf("Postgres init: %s", err)
+	} else {
+		// log.Infof("Postgres connected, status %#v", psqlDB.Status())
+		fmt.Println("Postgres connected, status %#v", psqlDB.Stats())
 	}
+	defer psqlDB.Close()
 
-	srv.Run(":8080")
+	srv := server.NewServer(psqlDB)
+	if err = srv.Run(); err != nil {
+		log.Fatal(err)
+	}
 }

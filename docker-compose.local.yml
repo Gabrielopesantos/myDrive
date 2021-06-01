@@ -5,14 +5,14 @@ services:
       image: postgres:12-alpine
       container_name: postgesql_api
       ports:
-        - 5432:5432
+        - "5432:5432"
       restart: always
       environment:
         - POSTGRES_USER=gabriel
         - POSTGRES_PASSWORD=leirbag123
         - POSTGRES_DB=users
       volumes:
-        - ./pgdata:/var/lib/postgresql/data
+        - ./_pgdata:/var/lib/postgresql/data
       networks:
         - web_api
 

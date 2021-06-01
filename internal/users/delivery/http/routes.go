@@ -1,6 +1,7 @@
 package http
 
 import (
+	"github.com/gabrielopesantos/myDrive-api/internal/users"
 	"github.com/labstack/echo/v4"
 )
 
