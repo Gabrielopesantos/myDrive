@@ -1,29 +1,29 @@
 package models
 
 import (
-	"strings"
-	"time"
-
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
+	"strings"
 )
 
 type User struct {
-	Base
-
-	FirstName string  `json:"firstName"`
-	LastName  string  `json:"lastName"`
-	Username  string  `json:"userName"`
-	Email     string  `json:"email"`
-	Password  string  `json:"password"`
-	About     *string `json:"about"`
-	Role      *string `json:"role"`
-	Avatar    *string `json:"avatar"`
+	UserID uuid.UUID  `json:"user_id" db:"user_id"`
+	FirstName string  `json:"first_name" db:"first_name"`
+	LastName  string  `json:"last_name" db:"last_name"`
+	//Username  string  `json:"username"`
+	Email     string  `json:"email" db:"email"`
+	Password  string  `json:"password" db:"password"`
+	About     *string `json:"about" db:"about"`
+	Role      *string `json:"role" db:"role"`
+	Avatar    *string `json:"avatar" db:"avatar"`
 
 	EmailVerified bool `json:"emailVerified"`
 	Active        bool `json:"active"`
 
-	LastLogin          time.Time `json:"lastLogin"`
-	LastPasswordChange time.Time `json:"lastPasswordChange"`
+	Base
+
+	//LastLogin          time.Time `json:"lastLogin"`
+	//LastPasswordChange time.Time `json:"lastPasswordChange"`
 }
 
 // type UserStorage interface {

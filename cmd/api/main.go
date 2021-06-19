@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
 	postgres "github.com/gabrielopesantos/myDrive-api/pkg/utl/database"
@@ -15,7 +14,7 @@ func main() {
 		log.Fatalf("Postgres init: %s", err)
 	} else {
 		// log.Infof("Postgres connected, status %#v", psqlDB.Status())
-		fmt.Println("Postgres connected, status %#v", psqlDB.Stats())
+		log.Println("Postgres connected, psqlDB.Stats()")
 	}
 	defer psqlDB.Close()
 

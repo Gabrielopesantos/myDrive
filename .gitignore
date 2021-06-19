@@ -16,5 +16,6 @@ vendor/
 
 # others?
 .env
-_pgdata
+_data
 .vscode
+.idea

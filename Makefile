@@ -8,10 +8,10 @@ force:
 version:
 	migrate -database postgresql://gabriel:leirbag123@localhost:5432/users?sslmode=disable -path migrations version 1
 
-migrate_up:
+migrate-up:
 	migrate -database postgresql://gabriel:leirbag123@localhost:5432/users?sslmode=disable -path migrations up 1
 
-migrate_down:
+migrate-down:
 	migrate -database postgresql://gabriel:leirbag123@localhost:5432/users?sslmode=disable -path migrations down 1
 
 # ==============================================================================

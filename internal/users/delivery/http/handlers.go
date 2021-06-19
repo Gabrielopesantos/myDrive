@@ -1,6 +1,7 @@
 package http
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/gabrielopesantos/myDrive-api/internal/users"
@@ -24,6 +25,7 @@ func NewUsersHandlers(usersUC users.UseCase) users.Handlers {
 
 func (u *userHandlers) Register() echo.HandlerFunc {
 	return func(c echo.Context) error {
+		log.Println("Register Handler")
 		span, ctx := opentracing.StartSpanFromContext(utils.GetRequestCtx(c), "users.Register")
 		defer span.Finish()
 
@@ -32,11 +34,13 @@ func (u *userHandlers) Register() echo.HandlerFunc {
 			// utils.LogResponseError(c, h.)
 			return c.JSON(httpErrors.ErrorResponse(err))
 		}
+		log.Println("After Reading Request")
 
 		createdUser, err := u.usersUC.Register(ctx, user)
 		if err != nil {
 			return c.JSON(httpErrors.ErrorResponse(err))
 		}
+		log.Println("After inserting the user in the database")
 
 		return c.JSON(http.StatusCreated, createdUser)
 	}
@@ -44,6 +48,7 @@ func (u *userHandlers) Register() echo.HandlerFunc {
 
 func (u *userHandlers) GetUserByID() echo.HandlerFunc {
 	return func(c echo.Context) error {
+		log.Println("Handler")
 		span, ctx := opentracing.StartSpanFromContext(utils.GetRequestCtx(c), "users.GetUserByID")
 		defer span.Finish()
 

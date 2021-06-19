@@ -19,8 +19,8 @@ CREATE TABLE users
     avatar       VARCHAR(512),
 
     created_at   TIMESTAMP WITH TIME ZONE    NOT NULL DEFAULT NOW(),
-    updated_at   TIMESTAMP WITH TIME ZONE             DEFAULT CURRENT_TIMESTAMP,
-    login_date   TIMESTAMP(0) WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+    updated_at   TIMESTAMP WITH TIME ZONE             DEFAULT CURRENT_TIMESTAMP
 );
-
+-- ,
+--     login_date   TIMESTAMP(0) WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
 -- https://github.com/golang-migrate/migrate/blob/v4.6.2/database/postgres/TUTORIAL.md

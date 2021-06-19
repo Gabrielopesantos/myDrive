@@ -24,7 +24,7 @@ func NewServer(db *sqlx.DB) *Server {
 func (s *Server) Run() error {
 
 	server := &http.Server{
-		Addr: "8888",
+		Addr: ":8888",
 	}
 
 	go func() {

@@ -5,7 +5,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func MapUserRoutes(authGroup *echo.Group, u users.Handlers) {
-	authGroup.POST("/register", u.Register())
-	authGroup.GET("/:user_id", u.GetUserByID())
+func MapUserRoutes(usersGroup *echo.Group, u users.Handlers) {
+	usersGroup.POST("/register", u.Register())
+	usersGroup.GET("/:user_id", u.GetUserByID())
 }
