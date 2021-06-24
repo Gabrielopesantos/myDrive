@@ -10,27 +10,44 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
+
+	"github.com/gabrielopesantos/myDrive-api/config"
+	"github.com/gabrielopesantos/myDrive-api/pkg/logger"
+)
+
+const (
+	maxHeaderBytes = 1 << 20
 )
 
 type Server struct {
 	echo *echo.Echo
+	cfg *config.Config
 	db   *sqlx.DB
+	logger logger.Logger
 }
 
-func NewServer(db *sqlx.DB) *Server {
-	return &Server{echo: echo.New(), db: db}
+func NewServer(cfg *config.Config, db *sqlx.DB, logger logger.Logger) *Server {
+	return &Server{
+		echo: echo.New(),
+		cfg: cfg,
+		db: db,
+		logger: logger,
+	}
 }
 
 func (s *Server) Run() error {
 
 	server := &http.Server{
-		Addr: ":8888",
+		Addr: s.cfg.Server.Port,
+		ReadTimeout: time.Second * s.cfg.Server.ReadTimeout,
+		WriteTimeout: time.Second * s.cfg.Server.WriteTimeout,
+		MaxHeaderBytes: maxHeaderBytes,
 	}
 
 	go func() {
-		s.echo.Logger.Infof("Server is listening on port: 8888")
+		s.logger.Infof("Server is listening on port: %s", s.cfg.Server.Port)
 		if err := s.echo.StartServer(server); err != nil {
-			s.echo.Logger.Fatalf("Error starting server", err)
+			s.logger.Fatalf("Error starting server", err)
 		}
 	}()
 
@@ -46,5 +63,6 @@ func (s *Server) Run() error {
 	ctx, shutdown := context.WithTimeout(context.Background(), 5*time.Second)
 	defer shutdown()
 
+	s.logger.Info("Server Exited Properly")
 	return s.echo.Server.Shutdown(ctx)
 }

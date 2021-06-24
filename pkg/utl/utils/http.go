@@ -25,3 +25,12 @@ func ReadRequest(ctx echo.Context, request interface{}) error {
 	}
 	return validate.StructCtx(ctx.Request().Context(), request)
 }
+
+// Get config path for local or docker
+func GetConfigPath(configPath string) string {
+	if configPath == "docker" {
+		return "./config/config-docker"
+	}
+
+	return "./config/config-local"
+}

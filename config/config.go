@@ -11,6 +11,7 @@ import (
 type Config struct {
 	Server   ServerConfig
 	Postgres PostgresConfig
+	Logger LoggerConfig
 }
 
 // Server config struct
@@ -40,6 +41,15 @@ type PostgresConfig struct {
 	PgDriver           string
 }
 
+// Logger config
+type LoggerConfig struct {
+	Development bool
+	DisableCaller bool
+	DisableStacktrace bool
+	Encoding string
+	Level string
+}
+
 // Load config file from given path
 func LoadConfig(filename string) (*viper.Viper, error) {
 	v := viper.New()
@@ -56,7 +66,7 @@ func LoadConfig(filename string) (*viper.Viper, error) {
 
 	return v, nil
 }
-
+//
 // Parse config file
 func ParseConfig(v *viper.Viper) (*Config, error) {
 	var c Config

@@ -12,6 +12,15 @@ server:
   CSRF: true
   Debug: false
 
+
+logger:
+  Development: true
+  DisableCaller: false
+  DisableStracktrace: false
+  Enconding: json
+  Level: info
+
+
 postgres:
   PostgresqlHost: localhost
   PostgresqlPort: 5432
