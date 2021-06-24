@@ -5,6 +5,10 @@
 
 * https://github.com/AleksK1NG/Go-Clean-Architecture-REST-API
 
+* https://github.com/xesina/golang-echo-realworld-example-app
+  
+* https://github.com/raahii/golang-grpc-realworld-example
+
 * https://github.com/ribice/gorsk
 
 * https://golangrepo.com/repo/sno6-gosane

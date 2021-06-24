@@ -17,7 +17,7 @@ logger:
   Development: true
   DisableCaller: false
   DisableStracktrace: false
-  Enconding: json
+  Encoding: json
   Level: info
 
 
@@ -28,4 +28,7 @@ postgres:
   PostgresqlPassword: leirbag123
   PostgresqlDbname: database
   PostgresqlSslmode: false
-  PgDriver: pgx
+
+metrics:
+  Url: 0.0.0.0:7070
+  ServiceName: api

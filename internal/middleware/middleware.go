@@ -7,14 +7,14 @@ import (
 
 // Middleware manager
 type MiddlewareManager struct {
-	cfg *config.Config
+	cfg    *config.Config
 	logger logger.Logger
 }
 
 // MiddlewareManager constructor
 func NewMiddlewareManager(cfg *config.Config, logger logger.Logger) *MiddlewareManager {
 	return &MiddlewareManager{
-		cfg: cfg,
+		cfg:    cfg,
 		logger: logger,
 	}
 }

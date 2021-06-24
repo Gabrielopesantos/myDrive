@@ -7,15 +7,15 @@ import (
 )
 
 type User struct {
-	UserID uuid.UUID  `json:"user_id" db:"user_id"`
-	FirstName string  `json:"first_name" db:"first_name"`
-	LastName  string  `json:"last_name" db:"last_name"`
+	UserID    uuid.UUID `json:"user_id" db:"user_id"`
+	FirstName string    `json:"first_name" db:"first_name"`
+	LastName  string    `json:"last_name" db:"last_name"`
 	//Username  string  `json:"username"`
-	Email     string  `json:"email" db:"email"`
-	Password  string  `json:"password" db:"password"`
-	About     *string `json:"about" db:"about"`
-	Role      *string `json:"role" db:"role"`
-	Avatar    *string `json:"avatar" db:"avatar"`
+	Email    string  `json:"email" db:"email"`
+	Password string  `json:"password" db:"password"`
+	About    *string `json:"about" db:"about"`
+	Role     *string `json:"role" db:"role"`
+	Avatar   *string `json:"avatar" db:"avatar"`
 
 	EmailVerified bool `json:"emailVerified"`
 	Active        bool `json:"active"`
@@ -25,14 +25,6 @@ type User struct {
 	//LastLogin          time.Time `json:"lastLogin"`
 	//LastPasswordChange time.Time `json:"lastPasswordChange"`
 }
-
-// type UserStorage interface {
-// 	ListUsers() ([]User, error)
-// 	GetUser(id uuid.UUID) (User, error)
-// 	AddUser(u User) (User, error)
-// 	UpdateUser(u User) (User, error)
-// 	DeleteUser(id uuid.UUID) error
-// }
 
 func (u *User) HashPassword() error {
 	hashedPwd, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
@@ -61,6 +53,12 @@ func (u *User) PrepareCreate() error {
 	return nil
 }
 
-type UserWithoutToken struct {
-	User *User
+// Sanitze user password
+func (u *User) SanitizePassword() {
+	u.Password = ""
+}
+
+type UserWithToken struct {
+	User  *User  `json:"user"`
+	Token string `json:"token"`
 }

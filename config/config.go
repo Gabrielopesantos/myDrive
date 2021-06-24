@@ -11,7 +11,8 @@ import (
 type Config struct {
 	Server   ServerConfig
 	Postgres PostgresConfig
-	Logger LoggerConfig
+	Logger   LoggerConfig
+	Metrics  Metrics
 }
 
 // Server config struct
@@ -43,11 +44,17 @@ type PostgresConfig struct {
 
 // Logger config
 type LoggerConfig struct {
-	Development bool
-	DisableCaller bool
+	Development       bool
+	DisableCaller     bool
 	DisableStacktrace bool
-	Encoding string
-	Level string
+	Encoding          string
+	Level             string
+}
+
+// Metrics config
+type Metrics struct {
+	URL         string
+	ServiceName string
 }
 
 // Load config file from given path
@@ -66,6 +73,7 @@ func LoadConfig(filename string) (*viper.Viper, error) {
 
 	return v, nil
 }
+
 //
 // Parse config file
 func ParseConfig(v *viper.Viper) (*Config, error) {

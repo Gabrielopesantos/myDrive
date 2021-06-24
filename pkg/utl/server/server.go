@@ -20,17 +20,17 @@ const (
 )
 
 type Server struct {
-	echo *echo.Echo
-	cfg *config.Config
-	db   *sqlx.DB
+	echo   *echo.Echo
+	cfg    *config.Config
+	db     *sqlx.DB
 	logger logger.Logger
 }
 
 func NewServer(cfg *config.Config, db *sqlx.DB, logger logger.Logger) *Server {
 	return &Server{
-		echo: echo.New(),
-		cfg: cfg,
-		db: db,
+		echo:   echo.New(),
+		cfg:    cfg,
+		db:     db,
 		logger: logger,
 	}
 }
@@ -38,9 +38,9 @@ func NewServer(cfg *config.Config, db *sqlx.DB, logger logger.Logger) *Server {
 func (s *Server) Run() error {
 
 	server := &http.Server{
-		Addr: s.cfg.Server.Port,
-		ReadTimeout: time.Second * s.cfg.Server.ReadTimeout,
-		WriteTimeout: time.Second * s.cfg.Server.WriteTimeout,
+		Addr:           s.cfg.Server.Port,
+		ReadTimeout:    time.Second * s.cfg.Server.ReadTimeout,
+		WriteTimeout:   time.Second * s.cfg.Server.WriteTimeout,
 		MaxHeaderBytes: maxHeaderBytes,
 	}
 

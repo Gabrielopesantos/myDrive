@@ -34,13 +34,12 @@ func (u *userHandlers) Register() echo.HandlerFunc {
 			// utils.LogResponseError(c, h.)
 			return c.JSON(httpErrors.ErrorResponse(err))
 		}
-		log.Println("After Reading Request")
 
 		createdUser, err := u.usersUC.Register(ctx, user)
+		log.Printf("ERRO: %v", err)
 		if err != nil {
 			return c.JSON(httpErrors.ErrorResponse(err))
 		}
-		log.Println("After inserting the user in the database")
 
 		return c.JSON(http.StatusCreated, createdUser)
 	}
@@ -48,7 +47,6 @@ func (u *userHandlers) Register() echo.HandlerFunc {
 
 func (u *userHandlers) GetUserByID() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		log.Println("Handler")
 		span, ctx := opentracing.StartSpanFromContext(utils.GetRequestCtx(c), "users.GetUserByID")
 		defer span.Finish()
 

@@ -2,6 +2,9 @@ package usecase
 
 import (
 	"context"
+	"github.com/gabrielopesantos/myDrive-api/config"
+	"github.com/gabrielopesantos/myDrive-api/pkg/logger"
+	"github.com/gabrielopesantos/myDrive-api/pkg/utl/utils"
 	"log"
 
 	"github.com/gabrielopesantos/myDrive-api/internal/users"
@@ -18,15 +21,20 @@ import (
 // )
 
 type usersUC struct {
-	// cfg       *config.Config
+	cfg       *config.Config
 	usersRepo users.Repository
+	logger    logger.Logger
 }
 
-func NewUsersUseCase(usersRepo users.Repository) *usersUC {
-	return &usersUC{usersRepo: usersRepo}
+func NewUsersUseCase(cfg *config.Config, usersRepo users.Repository, logger logger.Logger) *usersUC {
+	return &usersUC{
+		cfg:       cfg,
+		usersRepo: usersRepo,
+		logger:    logger,
+	}
 }
 
-func (u *usersUC) Register(ctx context.Context, user *models.User) (*models.UserWithoutToken, error) {
+func (u *usersUC) Register(ctx context.Context, user *models.User) (*models.UserWithToken, error) {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "usersUC.Register")
 	defer span.Finish()
 
@@ -40,18 +48,24 @@ func (u *usersUC) Register(ctx context.Context, user *models.User) (*models.User
 		return nil, err
 	}
 
-	return &models.UserWithoutToken{
-		User: createdUser,
+	createdUser.SanitizePassword()
+
+	token, err := utils.GenerateJWT(createdUser, u.cfg)
+	if err != nil {
+		return nil, httpErrors.NewInternalServerError(errors.Wrap(err, "usersUC.Register.GenerateJWT"))
+	}
+
+	return &models.UserWithToken{
+		User:  createdUser,
+		Token: token,
 	}, nil
 }
 
 func (u *usersUC) GetByID(ctx context.Context, userID uuid.UUID) (*models.User, error) {
-	log.Println("Usecase")
 	span, ctx := opentracing.StartSpanFromContext(ctx, "usersUC.GetByID")
 	defer span.Finish()
 
 	user, err := u.usersRepo.GetByID(ctx, userID)
-	log.Printf("After repo, %+v, %v", user, err)
 	if err != nil {
 		return nil, err
 	}
