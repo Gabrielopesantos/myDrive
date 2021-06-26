@@ -1,14 +1,20 @@
 package main
 
 import (
-	"github.com/gabrielopesantos/myDrive-api/config"
-	"github.com/gabrielopesantos/myDrive-api/pkg/logger"
-	"github.com/gabrielopesantos/myDrive-api/pkg/utl/utils"
 	"log"
 	"os"
 
+	"github.com/opentracing/opentracing-go"
+	"github.com/uber/jaeger-client-go"
+	jaegercfg "github.com/uber/jaeger-client-go/config"
+	jaegerlog "github.com/uber/jaeger-client-go/log"
+	"github.com/uber/jaeger-lib/metrics"
+
+	"github.com/gabrielopesantos/myDrive-api/config"
+	"github.com/gabrielopesantos/myDrive-api/pkg/logger"
 	postgres "github.com/gabrielopesantos/myDrive-api/pkg/utl/database"
 	"github.com/gabrielopesantos/myDrive-api/pkg/utl/server"
+	"github.com/gabrielopesantos/myDrive-api/pkg/utl/utils"
 )
 
 func main() {
@@ -37,6 +43,32 @@ func main() {
 		appLogger.Infof("Postgres connected, status %#v", psqlDB.Stats())
 	}
 	defer psqlDB.Close()
+
+	// Jaeger
+	jaegerCfgInstance := jaegercfg.Configuration{
+		ServiceName: cfg.Jaeger.ServiceName,
+		Sampler: &jaegercfg.SamplerConfig{
+			Type:  jaeger.SamplerTypeConst,
+			Param: 1,
+		},
+		Reporter: &jaegercfg.ReporterConfig{
+			LogSpans:           cfg.Jaeger.LogSpans,
+			LocalAgentHostPort: cfg.Jaeger.Host,
+		},
+	}
+
+	tracer, closer, err := jaegerCfgInstance.NewTracer(
+		jaegercfg.Logger(jaegerlog.StdLogger),
+		jaegercfg.Metrics(metrics.NullFactory),
+	)
+	if err != nil {
+		log.Fatal("cannot create tracer", err)
+	}
+	appLogger.Info("Jaeger connected")
+
+	opentracing.SetGlobalTracer(tracer)
+	defer closer.Close()
+	appLogger.Info("Opentracing connected")
 
 	srv := server.NewServer(cfg, psqlDB, appLogger)
 	if err = srv.Run(); err != nil {

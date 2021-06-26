@@ -13,6 +13,7 @@ type Config struct {
 	Postgres PostgresConfig
 	Logger   LoggerConfig
 	Metrics  Metrics
+	Jaeger   Jaeger
 }
 
 // Server config struct
@@ -55,6 +56,13 @@ type LoggerConfig struct {
 type Metrics struct {
 	URL         string
 	ServiceName string
+}
+
+// Tracer config (Jaeger)
+type Jaeger struct {
+	Host        string
+	ServiceName string
+	LogSpans    bool
 }
 
 // Load config file from given path

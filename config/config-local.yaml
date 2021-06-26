@@ -32,3 +32,8 @@ postgres:
 metrics:
   Url: 0.0.0.0:7070
   ServiceName: api
+
+jaeger:
+  Host: localhost:6831
+  ServiceName: REST_API
+  LogSpans: false

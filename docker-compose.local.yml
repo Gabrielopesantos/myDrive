@@ -3,14 +3,14 @@ version: "3.8"
 services:
     postgresql:
       image: postgres:12-alpine
-      container_name: postgesql_api
+      container_name: postgesql
       ports:
-        - "5432:5432"
+        - 5432:5432
       restart: always
       environment:
         - POSTGRES_USER=gabriel
         - POSTGRES_PASSWORD=leirbag123
-        - POSTGRES_DB=users
+        - POSTGRES_DB=users_db
       volumes:
         - ./_data/postgres:/var/lib/postgresql/data
       networks:
@@ -25,6 +25,51 @@ services:
         - PGADMIN_DEFAULT_PASSWORD=email
       ports:
         - 80:80 # IF TLS IS DISABLED ELSE 443
+      networks:
+        - web_api
+
+    prometheus:
+      container_name: prometheus_container
+      image: prom/prometheus
+      restart: always
+      volumes:
+        - ./docker/monitoring/prometheus-local.yml:/etc/prometheus/prometheus.yml:Z
+      command:
+        - '--config.file=/etc/prometheus/prometheus.yml'
+        - '--storage.tsdb.path=/prometheus'
+        - '--storage.tsdb.retention=20d'
+        - '--web.console.libraries=/usr/share/prometheus/console_libraries/'
+        - '--web.console.templates=/usr/share/prometheus/consoles'
+      ports:
+        - 9090:9090
+      networks:
+        - web_api
+
+    node_exporter:
+      container_name: node_exporter_container
+      image: prom/node-exporter
+      restart: always
+      ports:
+        - 9101:9100
+      networks:
+        - web_api
+
+
+    jaeger:
+      container_name: jaeger_container
+      image: jaegertracing/all-in-one:latest
+      restart: always
+      environment:
+        - COLLECTOR_ZIPKIN_HTTP_PORT=9411
+      ports:
+        - 5775:5775/udp
+        - 6831:6831/udp
+        - 6832:6832/udp
+        - 5778:5778
+        - 16686:16686
+        - 14268:14268
+        - 14250:14250
+        - 9411:9411
       networks:
         - web_api
 

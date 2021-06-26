@@ -14,7 +14,7 @@ func (s *Server) MapHandlers(e *echo.Echo) error {
 	if err != nil {
 		s.logger.Errorf("CreateMetrics Error: %s", err)
 	}
-	s.logger.Info(
+	s.logger.Infof(
 		"Metrics available URL: %s, ServiceName: %s",
 		s.cfg.Metrics.URL,
 		s.cfg.Metrics.ServiceName,
