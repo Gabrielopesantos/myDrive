@@ -25,7 +25,6 @@ func NewUsersHandlers(usersUC users.UseCase) users.Handlers {
 
 func (u *userHandlers) Register() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		log.Println("Register Handler")
 		span, ctx := opentracing.StartSpanFromContext(utils.GetRequestCtx(c), "users.Register")
 		defer span.Finish()
 

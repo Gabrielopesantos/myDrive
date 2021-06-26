@@ -1,6 +1,8 @@
 package main
 
 import (
+	postgres "github.com/gabrielopesantos/myDrive-api/pkg/utl/database/postgres"
+	redis "github.com/gabrielopesantos/myDrive-api/pkg/utl/database/redis"
 	"log"
 	"os"
 
@@ -12,7 +14,6 @@ import (
 
 	"github.com/gabrielopesantos/myDrive-api/config"
 	"github.com/gabrielopesantos/myDrive-api/pkg/logger"
-	postgres "github.com/gabrielopesantos/myDrive-api/pkg/utl/database"
 	"github.com/gabrielopesantos/myDrive-api/pkg/utl/server"
 	"github.com/gabrielopesantos/myDrive-api/pkg/utl/utils"
 )
@@ -44,6 +45,11 @@ func main() {
 	}
 	defer psqlDB.Close()
 
+	// Redis
+	redisClient := redis.NewRedisClient(cfg)
+	defer redisClient.Close()
+	appLogger.Info("Redis connected")
+
 	// Jaeger
 	jaegerCfgInstance := jaegercfg.Configuration{
 		ServiceName: cfg.Jaeger.ServiceName,
@@ -61,6 +67,7 @@ func main() {
 		jaegercfg.Logger(jaegerlog.StdLogger),
 		jaegercfg.Metrics(metrics.NullFactory),
 	)
+
 	if err != nil {
 		log.Fatal("cannot create tracer", err)
 	}
@@ -68,9 +75,10 @@ func main() {
 
 	opentracing.SetGlobalTracer(tracer)
 	defer closer.Close()
+
 	appLogger.Info("Opentracing connected")
 
-	srv := server.NewServer(cfg, psqlDB, appLogger)
+	srv := server.NewServer(cfg, psqlDB, redisClient, appLogger)
 	if err = srv.Run(); err != nil {
 		log.Fatal(err)
 	}

@@ -1,6 +1,15 @@
 version: "3.8"
 
 services:
+    redis:
+      image: redis:6.2.4-alpine
+      container_name: api_redis
+      restart: always
+      ports:
+        - 6379:6379
+      networks:
+        - web_api
+
     postgresql:
       image: postgres:12-alpine
       container_name: postgesql

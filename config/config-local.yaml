@@ -29,6 +29,17 @@ postgres:
   PostgresqlDbname: database
   PostgresqlSslmode: false
 
+redis:
+  RedisAddr: localhost:6379
+  RedisPassword:
+  RedisDB: 0
+  RedisDefaultDB: 0
+  MinIdleConns: 200
+  PoolSize: 12000
+  PoolTimeout: 240
+  Password: ""
+  DB: 0
+
 metrics:
   Url: 0.0.0.0:7070
   ServiceName: api

@@ -11,6 +11,7 @@ import (
 type Config struct {
 	Server   ServerConfig
 	Postgres PostgresConfig
+	Redis RedisConfig
 	Logger   LoggerConfig
 	Metrics  Metrics
 	Jaeger   Jaeger
@@ -32,6 +33,16 @@ type ServerConfig struct {
 	Debug             bool
 }
 
+
+// Logger config
+type LoggerConfig struct {
+	Development       bool
+	DisableCaller     bool
+	DisableStacktrace bool
+	Encoding          string
+	Level             string
+}
+
 // Postgresql config
 type PostgresConfig struct {
 	PostgresqlHost     string
@@ -43,13 +54,17 @@ type PostgresConfig struct {
 	PgDriver           string
 }
 
-// Logger config
-type LoggerConfig struct {
-	Development       bool
-	DisableCaller     bool
-	DisableStacktrace bool
-	Encoding          string
-	Level             string
+// Redis config
+type RedisConfig struct {
+	RedisAddr string
+	RedisPassword string
+	RedisDB string
+	RedisDefaultDB string
+	MinIdleConns int
+	PoolSize int
+	PoolTimeout int
+	Password string
+	DB int
 }
 
 // Metrics config

@@ -44,6 +44,7 @@ func (u *User) ComparePasswords(pwd string) error {
 }
 
 func (u *User) PrepareCreate() error {
+
 	u.Email = strings.ToLower(strings.TrimSpace(u.Email))
 	u.Password = strings.TrimSpace(u.Password)
 

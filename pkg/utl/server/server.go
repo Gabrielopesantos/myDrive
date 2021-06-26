@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"github.com/go-redis/redis/v8"
 	"net/http"
 	"os"
 	"os/signal"
@@ -23,14 +24,16 @@ type Server struct {
 	echo   *echo.Echo
 	cfg    *config.Config
 	db     *sqlx.DB
+	redisClient *redis.Client
 	logger logger.Logger
 }
 
-func NewServer(cfg *config.Config, db *sqlx.DB, logger logger.Logger) *Server {
+func NewServer(cfg *config.Config, db *sqlx.DB, redisClient *redis.Client, logger logger.Logger) *Server {
 	return &Server{
 		echo:   echo.New(),
 		cfg:    cfg,
 		db:     db,
+		redisClient: redisClient,
 		logger: logger,
 	}
 }

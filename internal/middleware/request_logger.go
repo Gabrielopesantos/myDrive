@@ -20,7 +20,8 @@ func (mw *MiddlewareManager) RequestLoggerMiddleware(next echo.HandlerFunc) echo
 		requestID := utils.GetRequestID(ctx)
 
 		mw.logger.Infof("RequestID: %s, Method: %s, URI: %s, Status: %v, Size: %v, Time: %s",
-			requestID, req.Method, req.URL, status, size, s)
+			requestID, req.Method, req.URL, status, size, s,
+		)
 
 		return err
 	}

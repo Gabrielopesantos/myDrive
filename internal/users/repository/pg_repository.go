@@ -34,7 +34,7 @@ func (r *UsersRepo) Register(ctx context.Context, user *models.User) (*models.Us
 }
 
 func (r *UsersRepo) GetByID(ctx context.Context, UserID uuid.UUID) (*models.User, error) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "usersRepo.Register")
+	span, ctx := opentracing.StartSpanFromContext(ctx, "usersRepo.GetByID")
 	defer span.Finish()
 
 	u := &models.User{}

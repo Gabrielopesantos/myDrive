@@ -1,12 +1,13 @@
 package server
 
 import (
+	"github.com/labstack/echo/v4"
+
 	apiMiddleware "github.com/gabrielopesantos/myDrive-api/internal/middleware"
 	userHttp "github.com/gabrielopesantos/myDrive-api/internal/users/delivery/http"
 	usersRepository "github.com/gabrielopesantos/myDrive-api/internal/users/repository"
 	usersUseCase "github.com/gabrielopesantos/myDrive-api/internal/users/usecase"
 	"github.com/gabrielopesantos/myDrive-api/pkg/metric"
-	"github.com/labstack/echo/v4"
 )
 
 func (s *Server) MapHandlers(e *echo.Echo) error {
@@ -22,8 +23,11 @@ func (s *Server) MapHandlers(e *echo.Echo) error {
 	// Init repos
 	uRepo := usersRepository.NewUsersRepository(s.db)
 
+	// Redis Repo
+	uRedisRepo := usersRepository.NewUsersRedisRepo(s.redisClient)
+
 	// Init useCases ?
-	usersUC := usersUseCase.NewUsersUseCase(s.cfg, uRepo, s.logger)
+	usersUC := usersUseCase.NewUsersUseCase(s.cfg, uRepo, uRedisRepo, s.logger)
 
 	// Init handlers
 	userHandlers := userHttp.NewUsersHandlers(usersUC)
