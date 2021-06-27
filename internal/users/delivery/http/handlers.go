@@ -1,9 +1,10 @@
 package http
 
 import (
-	httpErrors2 "github.com/gabrielopesantos/myDrive-api/pkg/http_errors"
-	utils2 "github.com/gabrielopesantos/myDrive-api/pkg/utils"
-	"log"
+	"github.com/gabrielopesantos/myDrive-api/config"
+	httpErrors "github.com/gabrielopesantos/myDrive-api/pkg/http_errors"
+	"github.com/gabrielopesantos/myDrive-api/pkg/logger"
+	utils "github.com/gabrielopesantos/myDrive-api/pkg/utils"
 	"net/http"
 
 	"github.com/gabrielopesantos/myDrive-api/internal/models"
@@ -14,30 +15,35 @@ import (
 )
 
 type userHandlers struct {
-	// cfg     *config.Config
+	cfg     *config.Config
 	usersUC users.UseCase
+	logger  logger.Logger
 }
 
-func NewUsersHandlers(usersUC users.UseCase) users.Handlers {
-	// return &authHandlers{cfg: cfg}
-	return &userHandlers{usersUC: usersUC}
+func NewUsersHandlers(cfg *config.Config, usersUC users.UseCase, logger logger.Logger) users.Handlers {
+	return &userHandlers{
+		cfg:     cfg,
+		usersUC: usersUC,
+		logger:  logger,
+	}
 }
 
 func (u *userHandlers) Register() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		span, ctx := opentracing.StartSpanFromContext(utils2.GetRequestCtx(c), "users.Register")
+		span, ctx := opentracing.StartSpanFromContext(utils.GetRequestCtx(c), "users.Register")
 		defer span.Finish()
 
 		user := &models.User{}
-		if err := utils2.ReadRequest(c, user); err != nil {
-			// utils.LogResponseError(c, h.)
-			return c.JSON(httpErrors2.ErrorResponse(err))
+		if err := utils.ReadRequest(c, user); err != nil {
+			utils.LogResponseError(c, u.logger, err)
+			//u.logger.Errorf("usersHandlers.Register.ReadRequest", err)
+			return c.JSON(httpErrors.ErrorResponse(err))
 		}
 
 		createdUser, err := u.usersUC.Register(ctx, user)
-		log.Printf("ERRO: %v", err)
 		if err != nil {
-			return c.JSON(httpErrors2.ErrorResponse(err))
+			utils.LogResponseError(c, u.logger, err)
+			return c.JSON(httpErrors.ErrorResponse(err))
 		}
 
 		return c.JSON(http.StatusCreated, createdUser)
@@ -46,17 +52,17 @@ func (u *userHandlers) Register() echo.HandlerFunc {
 
 func (u *userHandlers) GetUserByID() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		span, ctx := opentracing.StartSpanFromContext(utils2.GetRequestCtx(c), "users.GetUserByID")
+		span, ctx := opentracing.StartSpanFromContext(utils.GetRequestCtx(c), "users.GetUserByID")
 		defer span.Finish()
 
 		uID, err := uuid.Parse(c.Param("user_id"))
 		if err != nil {
-			return c.JSON(httpErrors2.ErrorResponse(err))
+			return c.JSON(httpErrors.ErrorResponse(err))
 		}
 
 		user, err := u.usersUC.GetByID(ctx, uID)
 		if err != nil {
-			return c.JSON(httpErrors2.ErrorResponse(err))
+			return c.JSON(httpErrors.ErrorResponse(err))
 		}
 
 		return c.JSON(http.StatusOK, user)

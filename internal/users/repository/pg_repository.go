@@ -27,7 +27,7 @@ func (r *UsersRepo) Register(ctx context.Context, user *models.User) (*models.Us
 	if err := r.db.QueryRowxContext(ctx, createUserQuery, &user.FirstName, &user.LastName, &user.Email,
 		&user.Password, &user.Role, &user.About, &user.Avatar,
 	).StructScan(u); err != nil {
-		return nil, errors.Wrap(err, "authUsers.Register.StructScan")
+		return nil, errors.Wrap(err, "usersRepo.Register.StructScan")
 	}
 
 	return u, nil
@@ -39,7 +39,7 @@ func (r *UsersRepo) GetByID(ctx context.Context, UserID uuid.UUID) (*models.User
 
 	u := &models.User{}
 	if err := r.db.QueryRowxContext(ctx, getUserQuery, UserID).StructScan(u); err != nil {
-		return nil, errors.Wrap(err, "authUsers.GetByID.StructScan")
+		return nil, errors.Wrap(err, "usersRepo.GetByID.StructScan")
 	}
 
 	return u, nil

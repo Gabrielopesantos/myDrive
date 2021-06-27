@@ -30,7 +30,7 @@ func (s *Server) MapHandlers(e *echo.Echo) error {
 	usersUC := usersUseCase.NewUsersUseCase(s.cfg, uRepo, uRedisRepo, s.logger)
 
 	// Init handlers
-	userHandlers := userHttp.NewUsersHandlers(usersUC)
+	userHandlers := userHttp.NewUsersHandlers(s.cfg, usersUC, s.logger)
 
 	// Init middleware
 	mw := apiMiddleware.NewMiddlewareManager(s.cfg, s.logger)

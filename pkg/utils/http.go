@@ -2,6 +2,7 @@ package utils
 
 import (
 	"context"
+	"github.com/gabrielopesantos/myDrive-api/pkg/logger"
 
 	"github.com/labstack/echo/v4"
 )
@@ -33,4 +34,17 @@ func GetConfigPath(configPath string) string {
 	}
 
 	return "./config/config-local"
+}
+
+// Get user ip address
+func GetIPAddress(c echo.Context) string {
+	return c.Request().RemoteAddr
+}
+
+// Error response with logging error for echo context
+func LogResponseError(ctx echo.Context, logger logger.Logger, err error) {
+	logger.Errorf(
+		"LogResponseError, RequestID: %s, IPAddress: %s, Error: %s",
+		GetRequestID(ctx), GetIPAddress(ctx), err,
+	)
 }

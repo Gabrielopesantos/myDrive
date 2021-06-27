@@ -11,7 +11,7 @@ import (
 type Config struct {
 	Server   ServerConfig
 	Postgres PostgresConfig
-	Redis RedisConfig
+	Redis    RedisConfig
 	Logger   LoggerConfig
 	Metrics  Metrics
 	Jaeger   Jaeger
@@ -32,7 +32,6 @@ type ServerConfig struct {
 	CSRF              bool
 	Debug             bool
 }
-
 
 // Logger config
 type LoggerConfig struct {
@@ -56,15 +55,15 @@ type PostgresConfig struct {
 
 // Redis config
 type RedisConfig struct {
-	RedisAddr string
-	RedisPassword string
-	RedisDB string
+	RedisAddr      string
+	RedisPassword  string
+	RedisDB        string
 	RedisDefaultDB string
-	MinIdleConns int
-	PoolSize int
-	PoolTimeout int
-	Password string
-	DB int
+	MinIdleConns   int
+	PoolSize       int
+	PoolTimeout    int
+	Password       string
+	DB             int
 }
 
 // Metrics config

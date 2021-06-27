@@ -8,16 +8,16 @@ import (
 )
 
 type User struct {
-	UserID    uuid.UUID `json:"user_id" db:"user_id"`
-	FirstName string    `json:"first_name" db:"first_name"`
-	LastName  string    `json:"last_name" db:"last_name"`
-	Email    string  `json:"email" db:"email"`
-	Password string  `json:"password" db:"password"`
-	About    *string `json:"about" db:"about"`
-	Role     *string `json:"role" db:"role"`
-	Avatar   *string `json:"avatar" db:"avatar"`
-	EmailVerified bool `json:"is_email_verified" db:"is_email_verified"`
-	LastLogin          time.Time `json:"last_login" db:"last_login"`
+	UserID        uuid.UUID `json:"user_id" db:"user_id"`
+	FirstName     string    `json:"first_name" db:"first_name"`
+	LastName      string    `json:"last_name" db:"last_name"`
+	Email         string    `json:"email" db:"email"`
+	Password      string    `json:"password,omitempty" db:"password"`
+	Role          *string   `json:"role" db:"role"`
+	About         *string   `json:"about,omitempty" db:"about"`
+	Avatar        *string   `json:"avatar,omitempty" db:"avatar"`
+	EmailVerified bool      `json:"is_email_verified" db:"is_email_verified"`
+	LastLogin     time.Time `json:"last_login,omitempty" db:"last_login" validate:"omitempty"`
 	Base
 }
 
