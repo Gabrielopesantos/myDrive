@@ -10,7 +10,7 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 
-	"github.com/gabrielopesantos/myDrive-api/pkg/utl/models"
+	"github.com/gabrielopesantos/myDrive-api/internal/models"
 )
 
 type Claims struct {

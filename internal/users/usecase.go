@@ -5,7 +5,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/gabrielopesantos/myDrive-api/pkg/utl/models"
+	"github.com/gabrielopesantos/myDrive-api/internal/models"
 )
 
 // Auth repository interface

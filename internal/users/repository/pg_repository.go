@@ -7,8 +7,8 @@ import (
 	"github.com/opentracing/opentracing-go"
 	"github.com/pkg/errors"
 
+	"github.com/gabrielopesantos/myDrive-api/internal/models"
 	"github.com/gabrielopesantos/myDrive-api/internal/users"
-	"github.com/gabrielopesantos/myDrive-api/pkg/utl/models"
 )
 
 type UsersRepo struct {

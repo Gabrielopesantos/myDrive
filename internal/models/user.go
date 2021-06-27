@@ -4,26 +4,21 @@ import (
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"strings"
+	"time"
 )
 
 type User struct {
 	UserID    uuid.UUID `json:"user_id" db:"user_id"`
 	FirstName string    `json:"first_name" db:"first_name"`
 	LastName  string    `json:"last_name" db:"last_name"`
-	//Username  string  `json:"username"`
 	Email    string  `json:"email" db:"email"`
 	Password string  `json:"password" db:"password"`
 	About    *string `json:"about" db:"about"`
 	Role     *string `json:"role" db:"role"`
 	Avatar   *string `json:"avatar" db:"avatar"`
-
-	EmailVerified bool `json:"emailVerified"`
-	Active        bool `json:"active"`
-
+	EmailVerified bool `json:"is_email_verified" db:"is_email_verified"`
+	LastLogin          time.Time `json:"last_login" db:"last_login"`
 	Base
-
-	//LastLogin          time.Time `json:"lastLogin"`
-	//LastPasswordChange time.Time `json:"lastPasswordChange"`
 }
 
 func (u *User) HashPassword() error {

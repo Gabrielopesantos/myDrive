@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 	"github.com/gabrielopesantos/myDrive-api/config"
+	"github.com/gabrielopesantos/myDrive-api/internal/models"
 	"github.com/gabrielopesantos/myDrive-api/internal/users"
+	httpErrors2 "github.com/gabrielopesantos/myDrive-api/pkg/http_errors"
 	"github.com/gabrielopesantos/myDrive-api/pkg/logger"
-	httpErrors "github.com/gabrielopesantos/myDrive-api/pkg/utl/http_errors"
-	"github.com/gabrielopesantos/myDrive-api/pkg/utl/models"
-	"github.com/gabrielopesantos/myDrive-api/pkg/utl/utils"
+	utils2 "github.com/gabrielopesantos/myDrive-api/pkg/utils"
 	"github.com/google/uuid"
 	"github.com/opentracing/opentracing-go"
 	"github.com/pkg/errors"
@@ -40,7 +40,7 @@ func (u *usersUC) Register(ctx context.Context, user *models.User) (*models.User
 	defer span.Finish()
 
 	if err := user.PrepareCreate(); err != nil {
-		return nil, httpErrors.NewBadRequestError(errors.Wrap(err, "usersUC.Register.PrepareCreate"))
+		return nil, httpErrors2.NewBadRequestError(errors.Wrap(err, "usersUC.Register.PrepareCreate"))
 	}
 
 	createdUser, err := u.usersRepo.Register(ctx, user)
@@ -50,9 +50,9 @@ func (u *usersUC) Register(ctx context.Context, user *models.User) (*models.User
 
 	createdUser.SanitizePassword()
 
-	token, err := utils.GenerateJWT(createdUser, u.cfg)
+	token, err := utils2.GenerateJWT(createdUser, u.cfg)
 	if err != nil {
-		return nil, httpErrors.NewInternalServerError(errors.Wrap(err, "usersUC.Register.GenerateJWT"))
+		return nil, httpErrors2.NewInternalServerError(errors.Wrap(err, "usersUC.Register.GenerateJWT"))
 	}
 
 	return &models.UserWithToken{

@@ -21,20 +21,20 @@ const (
 )
 
 type Server struct {
-	echo   *echo.Echo
-	cfg    *config.Config
-	db     *sqlx.DB
+	echo        *echo.Echo
+	cfg         *config.Config
+	db          *sqlx.DB
 	redisClient *redis.Client
-	logger logger.Logger
+	logger      logger.Logger
 }
 
 func NewServer(cfg *config.Config, db *sqlx.DB, redisClient *redis.Client, logger logger.Logger) *Server {
 	return &Server{
-		echo:   echo.New(),
-		cfg:    cfg,
-		db:     db,
+		echo:        echo.New(),
+		cfg:         cfg,
+		db:          db,
 		redisClient: redisClient,
-		logger: logger,
+		logger:      logger,
 	}
 }
 

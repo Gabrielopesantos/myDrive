@@ -6,8 +6,8 @@ import (
 	"github.com/pkg/errors"
 	"time"
 
+	"github.com/gabrielopesantos/myDrive-api/internal/models"
 	"github.com/gabrielopesantos/myDrive-api/internal/users"
-	"github.com/gabrielopesantos/myDrive-api/pkg/utl/models"
 	"github.com/go-redis/redis/v8"
 	"github.com/opentracing/opentracing-go"
 )
@@ -48,7 +48,7 @@ func (u *usersRedisRepo) SetUserCtx(ctx context.Context, key string, user *model
 
 	userBytes, err := json.Marshal(user)
 	if err != nil {
-		return errors.Wrap(err,"usersRedisRepo.SetUserCtx.json.Marshal")
+		return errors.Wrap(err, "usersRedisRepo.SetUserCtx.json.Marshal")
 	}
 
 	if err = u.redisClient.Set(ctx, key, userBytes, time.Second*time.Duration(seconds)).Err(); err != nil {

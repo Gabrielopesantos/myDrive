@@ -3,7 +3,7 @@ package users
 import (
 	"context"
 
-	"github.com/gabrielopesantos/myDrive-api/pkg/utl/models"
+	"github.com/gabrielopesantos/myDrive-api/internal/models"
 )
 
 // Users Redis repository interface

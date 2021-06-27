@@ -1,8 +1,9 @@
 package main
 
 import (
-	postgres "github.com/gabrielopesantos/myDrive-api/pkg/utl/database/postgres"
-	redis "github.com/gabrielopesantos/myDrive-api/pkg/utl/database/redis"
+	postgres "github.com/gabrielopesantos/myDrive-api/pkg/database/postgres"
+	redis "github.com/gabrielopesantos/myDrive-api/pkg/database/redis"
+	utils "github.com/gabrielopesantos/myDrive-api/pkg/utils"
 	"log"
 	"os"
 
@@ -13,9 +14,8 @@ import (
 	"github.com/uber/jaeger-lib/metrics"
 
 	"github.com/gabrielopesantos/myDrive-api/config"
+	server "github.com/gabrielopesantos/myDrive-api/internal/server"
 	"github.com/gabrielopesantos/myDrive-api/pkg/logger"
-	"github.com/gabrielopesantos/myDrive-api/pkg/utl/server"
-	"github.com/gabrielopesantos/myDrive-api/pkg/utl/utils"
 )
 
 func main() {
