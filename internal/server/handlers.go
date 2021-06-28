@@ -2,6 +2,7 @@ package server
 
 import (
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 
 	apiMiddleware "github.com/gabrielopesantos/myDrive-api/internal/middleware"
 	userHttp "github.com/gabrielopesantos/myDrive-api/internal/users/delivery/http"
@@ -36,13 +37,16 @@ func (s *Server) MapHandlers(e *echo.Echo) error {
 	mw := apiMiddleware.NewMiddlewareManager(s.cfg, s.logger)
 	e.Use(mw.RequestLoggerMiddleware)
 
-	//e.Use(middleware.RequestID())
+	e.Use(middleware.RequestID()) // Adds RequestID field to echo.Context struct
 	e.Use(mw.MetricsMiddleware(metrics))
 
 	v1 := e.Group("/api/v1")
 
 	usersGroup := v1.Group("/users")
 	userHttp.MapUserRoutes(usersGroup, userHandlers)
+
+	//authHandlers := authHttp.NewAuthHandlers(s.cfg, usersUC, s.logger)
+	//authGroup := v1.Group("/auth")
 
 	return nil
 }

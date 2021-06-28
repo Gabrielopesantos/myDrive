@@ -7,8 +7,7 @@ CREATE EXTENSION IF NOT EXISTS CITEXT;
 
 
 -- CREATE TABLE IF NOT EXISTS (and remove first line)?
-CREATE TABLE users
-(
+CREATE TABLE users (
     user_id      UUID PRIMARY KEY                     DEFAULT uuid_generate_v4(),
     first_name   VARCHAR(32)                 NOT NULL CHECK ( first_name <> '' ),
     last_name    VARCHAR(32)                 NOT NULL CHECK ( last_name <> '' ),
@@ -26,3 +25,16 @@ CREATE TABLE users
 -- ,
 --     login_date   TIMESTAMP(0) WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
 -- https://github.com/golang-migrate/migrate/blob/v4.6.2/database/postgres/TUTORIAL.md
+
+CREATE TABLE files (
+    file_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    file_owner_id UUID NOT NULL REFERENCES users (user_id),
+    filename VARCHAR(100) NOT NULL CHECK (filename <> ''),
+    description VARCHAR(1024) NOT NULL CHECK (description <> ''),
+    extension VARCHAR(4) NOT NULL,
+    size FLOAT NOT NULL,
+    tags VARCHAR(512),
+
+    created_at   TIMESTAMP WITH TIME ZONE    NOT NULL DEFAULT NOW(),
+    updated_at   TIMESTAMP WITH TIME ZONE             DEFAULT CURRENT_TIMESTAMP
+)

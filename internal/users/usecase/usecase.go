@@ -26,7 +26,7 @@ type usersUC struct {
 	logger    logger.Logger
 }
 
-func NewUsersUseCase(cfg *config.Config, usersRepo users.Repository, redisRepo users.RedisRepository, logger logger.Logger) *usersUC {
+func NewUsersUseCase(cfg *config.Config, usersRepo users.Repository, redisRepo users.RedisRepository, logger logger.Logger) users.UseCase {
 	return &usersUC{
 		cfg:       cfg,
 		usersRepo: usersRepo,
