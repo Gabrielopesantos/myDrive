@@ -37,13 +37,28 @@ func (s *Server) MapHandlers(e *echo.Echo) error {
 	mw := apiMiddleware.NewMiddlewareManager(s.cfg, s.logger)
 	e.Use(mw.RequestLoggerMiddleware)
 
+	// ?
+	e.Use(middleware.RecoverWithConfig(middleware.RecoverConfig{
+		StackSize: 1 << 10,
+		DisablePrintStack: true,
+		DisableStackAll: true,
+	}))
+
 	e.Use(middleware.RequestID()) // Adds RequestID field to echo.Context struct
 	e.Use(mw.MetricsMiddleware(metrics))
+
+	// ?
+	e.Use(middleware.Secure()) // Ver
+	e.Use(middleware.BodyLimit("2M")) // Change to add files
+
+	if s.cfg.Server.Debug {
+		e.Use(mw.DebugMiddleware)
+	}
 
 	v1 := e.Group("/api/v1")
 
 	usersGroup := v1.Group("/users")
-	userHttp.MapUserRoutes(usersGroup, userHandlers)
+	userHttp.MapUserRoutes(usersGroup, userHandlers, mw)
 
 	//authHandlers := authHttp.NewAuthHandlers(s.cfg, usersUC, s.logger)
 	//authGroup := v1.Group("/auth")

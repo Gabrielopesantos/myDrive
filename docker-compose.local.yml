@@ -11,7 +11,7 @@ services:
         - web_api
 
     postgresql:
-      image: postgres:12-alpine
+      image: postgres:12.5-alpine
       container_name: postgesql
       ports:
         - 5432:5432
