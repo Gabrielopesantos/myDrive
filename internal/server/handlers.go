@@ -4,6 +4,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
+	authHttp "github.com/gabrielopesantos/myDrive-api/internal/auth/delivery/http"
 	apiMiddleware "github.com/gabrielopesantos/myDrive-api/internal/middleware"
 	userHttp "github.com/gabrielopesantos/myDrive-api/internal/users/delivery/http"
 	usersRepository "github.com/gabrielopesantos/myDrive-api/internal/users/repository"
@@ -32,6 +33,7 @@ func (s *Server) MapHandlers(e *echo.Echo) error {
 
 	// Init handlers
 	userHandlers := userHttp.NewUsersHandlers(s.cfg, usersUC, s.logger)
+	authHandlers := authHttp.NewAuthHandlers(s.cfg, usersUC, s.logger)
 
 	// Init middleware
 	mw := apiMiddleware.NewMiddlewareManager(s.cfg, s.logger)
@@ -60,8 +62,8 @@ func (s *Server) MapHandlers(e *echo.Echo) error {
 	usersGroup := v1.Group("/users")
 	userHttp.MapUserRoutes(usersGroup, userHandlers, mw)
 
-	//authHandlers := authHttp.NewAuthHandlers(s.cfg, usersUC, s.logger)
-	//authGroup := v1.Group("/auth")
+	authGroup := v1.Group("/auth")
+	authHttp.MapAuthRoutes(authGroup, authHandlers)
 
 	return nil
 }

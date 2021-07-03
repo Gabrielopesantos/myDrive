@@ -44,3 +44,15 @@ func (r *UsersRepo) GetByID(ctx context.Context, UserID uuid.UUID) (*models.User
 
 	return u, nil
 }
+
+func (r *UsersRepo) FindByEmail(ctx context.Context, email string) (*models.User, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "usersRepo.FindByEmail")
+	defer span.Finish()
+
+	u := &models.User{}
+	if err := r.db.QueryRowxContext(ctx, FindByEmailQuery, email).StructScan(u); err != nil {
+		return nil, errors.Wrap(err, "usersRepo.FindByEmail.StructScan")
+	}
+
+	return u, nil
+}

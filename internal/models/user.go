@@ -31,8 +31,8 @@ func (u *User) HashPassword() error {
 	return nil
 }
 
-func (u *User) ComparePasswords(pwd string) error {
-	if err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(u.Password)); err != nil {
+func (u *User) ComparePasswords(password string) error {
+	if err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password)); err != nil {
 		return err
 	}
 	return nil

@@ -9,4 +9,8 @@ const (
 	getUserQuery = `SELECT user_id, first_name, last_name, email, role, avatar, about, is_email_verified, created_at, updated_at
 					FROM users 
 					WHERE user_id = $1`
+
+	FindByEmailQuery = `SELECT user_id, password, first_name, last_name, email, role, avatar, about, is_email_verified, created_at, updated_at
+					FROM users 
+					WHERE email = $1`
 )

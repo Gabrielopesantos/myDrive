@@ -35,6 +35,33 @@ func NewUsersUseCase(cfg *config.Config, usersRepo users.Repository, redisRepo u
 	}
 }
 
+func (u *usersUC) Login(ctx context.Context, user *models.User) (*models.UserWithToken, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "usersUC.Login")
+	defer span.Finish()
+
+	// Should be search by email
+	foundUser, err := u.usersRepo.FindByEmail(ctx, user.Email)
+	if err != nil {
+		return nil, err
+	}
+
+	if err = foundUser.ComparePasswords(user.Password); err != nil {
+		return nil, httpErrors.NewUnauthorizedError(errors.Wrap(err, "usersUC.Login.ComparePasswords"))
+	}
+
+	foundUser.SanitizePassword()
+
+	token, err := utils.GenerateJWT(foundUser, u.cfg)
+	if err != nil {
+		return nil, httpErrors.NewInternalServerError(errors.Wrap(err, "usersUC.Login.GenerateJWT"))
+	}
+
+	return &models.UserWithToken{
+		User: foundUser,
+		Token: token,
+	}, nil
+}
+
 func (u *usersUC) Register(ctx context.Context, user *models.User) (*models.UserWithToken, error) {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "usersUC.Register")
 	defer span.Finish()

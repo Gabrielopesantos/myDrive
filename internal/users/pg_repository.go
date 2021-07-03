@@ -11,4 +11,5 @@ import (
 type Repository interface {
 	Register(ctx context.Context, user *models.User) (*models.User, error)
 	GetByID(ctx context.Context, UserID uuid.UUID) (*models.User, error)
+	FindByEmail(ctx context.Context, UserID string) (*models.User, error)
 }
