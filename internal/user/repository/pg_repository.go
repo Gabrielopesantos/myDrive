@@ -2,6 +2,8 @@ package repository
 
 import (
 	"context"
+	"fmt"
+	"github.com/gabrielopesantos/myDrive-api/pkg/utils"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/opentracing/opentracing-go"
@@ -19,7 +21,7 @@ func NewUserRepository(db *sqlx.DB) user.Repository {
 	return &userRepo{db: db}
 }
 
-func (r *userRepo) GetUsers(ctx context.Context) ([]models.User, error) {
+func (r *userRepo) GetUsers(ctx context.Context, pagQuery *utils.PaginationQuery) ([]*models.User, error) {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "userRepo.GetUsers")
 	defer span.Finish()
 
@@ -29,19 +31,21 @@ func (r *userRepo) GetUsers(ctx context.Context) ([]models.User, error) {
 	}
 
 	if numUsers == 0 {
-		return []models.User{}, nil
+		return []*models.User{}, nil
 	}
 
-	var usersList = make([]models.User, 0, numUsers)
+	fmt.Printf("%+v", pagQuery)
+	var users = make([]*models.User, 0, numUsers)
 	if err := r.db.SelectContext(
 		ctx,
-		&usersList,
+		&users,
 		getAllUsersQuery,
+		pagQuery.OrderBy,
 	); err != nil {
 		return nil, errors.Wrap(err, "userRepo.GetUsers.SelectContext")
 	}
 
-	return usersList, nil
+	return users, nil
 }
 
 func (r *userRepo) Register(ctx context.Context, user *models.User) (*models.User, error) {

@@ -33,14 +33,20 @@ func (h *userHandlers) GetUsers() echo.HandlerFunc {
 		span, ctx := opentracing.StartSpanFromContext(utils.GetRequestCtx(c), "userHandlers.GetUsers")
 		defer span.Finish()
 
-		usersList, err := h.service.GetUsers(ctx)
+		pagQuery, err := utils.GetPaginationFromCtx(c)
+		if err != nil {
+			utils.LogResponseError(c, h.logger, err)
+			return c.JSON(httpErrors.ErrorResponse(err))
+		}
+
+		users, err := h.service.GetUsers(ctx, pagQuery)
 		if err != nil {
 			utils.LogResponseError(c, h.logger, err)
 
 			return c.JSON(httpErrors.ErrorResponse(err))
 		}
 
-		return c.JSON(http.StatusOK, usersList)
+		return c.JSON(http.StatusOK, users)
 	}
 }
 

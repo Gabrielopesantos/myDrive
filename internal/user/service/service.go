@@ -36,11 +36,11 @@ func NewUserService(cfg *config.Config, userRepo user.Repository, redisRepo user
 }
 
 // Hm?
-func (s *userService) GetUsers(ctx context.Context) ([]models.User, error) {
+func (s *userService) GetUsers(ctx context.Context, pagQuery *utils.PaginationQuery) ([]*models.User, error) {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "userService.GetUsers")
 	defer span.Finish()
 
-	return s.userRepo.GetUsers(ctx)
+	return s.userRepo.GetUsers(ctx, pagQuery)
 }
 
 func (s *userService) Login(ctx context.Context, user *models.User) (*models.UserWithToken, error) {
