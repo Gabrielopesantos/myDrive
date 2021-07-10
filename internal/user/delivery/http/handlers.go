@@ -8,7 +8,7 @@ import (
 	"net/http"
 
 	"github.com/gabrielopesantos/myDrive-api/internal/models"
-	"github.com/gabrielopesantos/myDrive-api/internal/users"
+	"github.com/gabrielopesantos/myDrive-api/internal/user"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/opentracing/opentracing-go"
@@ -16,33 +16,48 @@ import (
 
 type userHandlers struct {
 	cfg     *config.Config
-	usersUC users.UseCase
+	service user.Service
 	logger  logger.Logger
 }
 
-func NewUsersHandlers(cfg *config.Config, usersUC users.UseCase, logger logger.Logger) users.Handlers {
+func NewUsersHandlers(cfg *config.Config, service user.Service, logger logger.Logger) user.Handlers {
 	return &userHandlers{
 		cfg:     cfg,
-		usersUC: usersUC,
+		service: service,
 		logger:  logger,
 	}
 }
 
-func (u *userHandlers) Register() echo.HandlerFunc {
+func (h *userHandlers) GetUsers() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		span, ctx := opentracing.StartSpanFromContext(utils.GetRequestCtx(c), "userHandlers.GetUsers")
+		defer span.Finish()
+
+		usersList, err := h.service.GetUsers(ctx)
+		if err != nil {
+			utils.LogResponseError(c, h.logger, err)
+
+			return c.JSON(httpErrors.ErrorResponse(err))
+		}
+
+		return c.JSON(http.StatusOK, usersList)
+	}
+}
+
+func (h *userHandlers) Register() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		span, ctx := opentracing.StartSpanFromContext(utils.GetRequestCtx(c), "users.Register")
 		defer span.Finish()
 
-		user := &models.User{}
-		if err := utils.ReadRequest(c, user); err != nil {
-			utils.LogResponseError(c, u.logger, err)
-			//u.logger.Errorf("usersHandlers.Register.ReadRequest", err)
+		newUser := &models.User{}
+		if err := utils.ReadRequest(c, newUser); err != nil {
+			utils.LogResponseError(c, h.logger, err)
 			return c.JSON(httpErrors.ErrorResponse(err))
 		}
 
-		createdUser, err := u.usersUC.Register(ctx, user)
+		createdUser, err := h.service.Register(ctx, newUser)
 		if err != nil {
-			utils.LogResponseError(c, u.logger, err)
+			utils.LogResponseError(c, h.logger, err)
 			return c.JSON(httpErrors.ErrorResponse(err))
 		}
 
@@ -50,7 +65,7 @@ func (u *userHandlers) Register() echo.HandlerFunc {
 	}
 }
 
-func (u *userHandlers) GetUserByID() echo.HandlerFunc {
+func (h *userHandlers) GetUserByID() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		span, ctx := opentracing.StartSpanFromContext(utils.GetRequestCtx(c), "users.GetUserByID")
 		defer span.Finish()
@@ -60,11 +75,11 @@ func (u *userHandlers) GetUserByID() echo.HandlerFunc {
 			return c.JSON(httpErrors.ErrorResponse(err))
 		}
 
-		user, err := u.usersUC.GetByID(ctx, uID)
+		existingUser, err := h.service.GetByID(ctx, uID)
 		if err != nil {
 			return c.JSON(httpErrors.ErrorResponse(err))
 		}
 
-		return c.JSON(http.StatusOK, user)
+		return c.JSON(http.StatusOK, existingUser)
 	}
 }

@@ -1,4 +1,4 @@
-package users
+package user
 
 import (
 	"context"
@@ -7,8 +7,9 @@ import (
 	"github.com/google/uuid"
 )
 
-// Users Repository Interface
+// Users Postgres Store Interface
 type Repository interface {
+	GetUsers(ctx context.Context) ([]models.User, error)
 	Register(ctx context.Context, user *models.User) (*models.User, error)
 	GetByID(ctx context.Context, UserID uuid.UUID) (*models.User, error)
 	FindByEmail(ctx context.Context, UserID string) (*models.User, error)

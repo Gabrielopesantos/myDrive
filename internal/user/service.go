@@ -1,4 +1,4 @@
-package users
+package user
 
 import (
 	"context"
@@ -8,8 +8,9 @@ import (
 	"github.com/gabrielopesantos/myDrive-api/internal/models"
 )
 
-// Auth repository interface
-type UseCase interface {
+// Users Service interface
+type Service interface {
+	GetUsers(ctx context.Context) ([]models.User, error)
 	Register(ctx context.Context, user *models.User) (*models.UserWithToken, error)
 	GetByID(ctx context.Context, userID uuid.UUID) (*models.User, error)
 	Login(ctx context.Context, user *models.User) (*models.UserWithToken, error)
