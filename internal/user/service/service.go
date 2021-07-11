@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	basePrefix    = "api-users"
+	basePrefix    = "api-user"
 	cacheDuration = 3600
 )
 

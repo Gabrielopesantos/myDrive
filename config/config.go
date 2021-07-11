@@ -10,6 +10,8 @@ import (
 
 type Config struct {
 	Server   ServerConfig
+	Cookie   Cookie
+	Session  Session
 	Postgres PostgresConfig
 	Redis    RedisConfig
 	Logger   LoggerConfig
@@ -31,6 +33,21 @@ type ServerConfig struct {
 	CtxDefaultTimeout time.Duration
 	CSRF              bool
 	Debug             bool
+}
+
+// Cookie config
+type Cookie struct {
+	Name     string
+	MaxAge   int
+	Secure   bool
+	HttpOnly bool
+}
+
+// Session Config
+type Session struct {
+	Name   string
+	Prefix string
+	Expire int
 }
 
 // Logger config

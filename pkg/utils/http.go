@@ -2,7 +2,9 @@ package utils
 
 import (
 	"context"
+	"github.com/gabrielopesantos/myDrive-api/config"
 	"github.com/gabrielopesantos/myDrive-api/pkg/logger"
+	"net/http"
 
 	"github.com/labstack/echo/v4"
 )
@@ -35,6 +37,33 @@ func GetConfigPath(configPath string) string {
 
 	return "./config/config-local"
 }
+
+// Create Session Cookie
+func CreateSessionCookie(cfg *config.Config, session string) *http.Cookie {
+	return &http.Cookie{
+		Name:       cfg.Session.Name,
+		Value:      session,
+		Path:       "/",
+		RawExpires: "",
+		MaxAge:     cfg.Cookie.MaxAge,
+		Secure:     cfg.Cookie.Secure,
+		HttpOnly:   cfg.Cookie.HttpOnly,
+		SameSite:   0,
+	}
+}
+
+// UserCtxKey: Used for the user object in the context
+type UserCtxKey struct{}
+
+// Get user from context
+//func GetUserFromCtx(ctx context.Context) (*models.User, error) {
+//	user, ok := ctx.Value(UserCtxKey{}).(*models.User)
+//	if !ok {
+//		return nil, httpErrors.Unauthorized
+//	}
+//
+//	return user, nil
+//}
 
 // Get user ip address
 func GetIPAddress(c echo.Context) string {

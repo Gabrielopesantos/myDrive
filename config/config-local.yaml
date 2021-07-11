@@ -13,6 +13,17 @@ server:
   Debug: true
 
 
+cookie:
+  Name: jwt-token
+  MaxAge: 86400
+  Secure: false
+  HttpOnly: true
+
+session:
+  Name: session-id
+  Prefix: api-session
+  Expire: 3600
+
 logger:
   Development: true
   DisableCaller: false

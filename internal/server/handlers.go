@@ -6,6 +6,8 @@ import (
 
 	authHttp "github.com/gabrielopesantos/myDrive-api/internal/auth/delivery/http"
 	apiMiddleware "github.com/gabrielopesantos/myDrive-api/internal/middleware"
+	sessionRepository "github.com/gabrielopesantos/myDrive-api/internal/session/repository"
+	sessionService "github.com/gabrielopesantos/myDrive-api/internal/session/service"
 	userHttp "github.com/gabrielopesantos/myDrive-api/internal/user/delivery/http"
 	usersRepository "github.com/gabrielopesantos/myDrive-api/internal/user/repository"
 	usersService "github.com/gabrielopesantos/myDrive-api/internal/user/service"
@@ -25,17 +27,20 @@ func (s *Server) MapHandlers(e *echo.Echo) error {
 	// Init repos
 	uRepo := usersRepository.NewUserRepository(s.db)
 
-	// Redis Repo
+	// Init Redis Repo
+	sRedisRepo := sessionRepository.NewSessionRedisRepo(s.redisClient, s.cfg)
 	uRedisRepo := usersRepository.NewUserRedisRepo(s.redisClient)
 
+	// Init Services
 	uService := usersService.NewUserService(s.cfg, uRepo, uRedisRepo, s.logger)
+	sService := sessionService.NewSessionService(sRedisRepo, s.cfg)
 
 	// Init handlers
-	uHandlers := userHttp.NewUsersHandlers(s.cfg, uService, s.logger)
+	uHandlers := userHttp.NewUsersHandlers(s.cfg, uService, sService, s.logger)
 	authHandlers := authHttp.NewAuthHandlers(s.cfg, uService, s.logger)
 
 	// Init middleware
-	mw := apiMiddleware.NewMiddlewareManager(s.cfg, s.logger)
+	mw := apiMiddleware.NewMiddlewareManager(sService, uService, s.cfg, s.logger)
 	e.Use(mw.RequestLoggerMiddleware)
 
 	// ?

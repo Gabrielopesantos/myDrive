@@ -2,6 +2,7 @@ package http
 
 import (
 	"github.com/gabrielopesantos/myDrive-api/config"
+	"github.com/gabrielopesantos/myDrive-api/internal/session"
 	httpErrors "github.com/gabrielopesantos/myDrive-api/pkg/http_errors"
 	"github.com/gabrielopesantos/myDrive-api/pkg/logger"
 	utils "github.com/gabrielopesantos/myDrive-api/pkg/utils"
@@ -15,16 +16,18 @@ import (
 )
 
 type userHandlers struct {
-	cfg     *config.Config
-	service user.Service
-	logger  logger.Logger
+	cfg            *config.Config
+	userService    user.Service
+	sessionService session.Service
+	logger         logger.Logger
 }
 
-func NewUsersHandlers(cfg *config.Config, service user.Service, logger logger.Logger) user.Handlers {
+func NewUsersHandlers(cfg *config.Config, userService user.Service, sessionService session.Service, logger logger.Logger) user.Handlers {
 	return &userHandlers{
-		cfg:     cfg,
-		service: service,
-		logger:  logger,
+		cfg:            cfg,
+		userService:    userService,
+		sessionService: sessionService,
+		logger:         logger,
 	}
 }
 
@@ -39,7 +42,7 @@ func (h *userHandlers) GetUsers() echo.HandlerFunc {
 			return c.JSON(httpErrors.ErrorResponse(err))
 		}
 
-		users, err := h.service.GetUsers(ctx, pagQuery)
+		users, err := h.userService.GetUsers(ctx, pagQuery)
 		if err != nil {
 			utils.LogResponseError(c, h.logger, err)
 
@@ -61,11 +64,20 @@ func (h *userHandlers) Register() echo.HandlerFunc {
 			return c.JSON(httpErrors.ErrorResponse(err))
 		}
 
-		createdUser, err := h.service.Register(ctx, newUser)
+		createdUser, err := h.userService.Register(ctx, newUser)
 		if err != nil {
 			utils.LogResponseError(c, h.logger, err)
 			return c.JSON(httpErrors.ErrorResponse(err))
 		}
+
+		session, err := h.sessionService.CreateSession(
+			ctx,
+			&models.Session{
+				UserID: createdUser.User.UserID,
+			},
+			h.cfg.Session.Expire)
+
+		c.SetCookie(utils.CreateSessionCookie(h.cfg, session))
 
 		return c.JSON(http.StatusCreated, createdUser)
 	}
@@ -81,7 +93,7 @@ func (h *userHandlers) GetUserByID() echo.HandlerFunc {
 			return c.JSON(httpErrors.ErrorResponse(err))
 		}
 
-		existingUser, err := h.service.GetByID(ctx, uID)
+		existingUser, err := h.userService.GetByID(ctx, uID)
 		if err != nil {
 			return c.JSON(httpErrors.ErrorResponse(err))
 		}

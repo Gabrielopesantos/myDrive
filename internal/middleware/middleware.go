@@ -2,19 +2,25 @@ package middleware
 
 import (
 	"github.com/gabrielopesantos/myDrive-api/config"
+	"github.com/gabrielopesantos/myDrive-api/internal/session"
+	"github.com/gabrielopesantos/myDrive-api/internal/user"
 	"github.com/gabrielopesantos/myDrive-api/pkg/logger"
 )
 
 // Middleware manager
 type MiddlewareManager struct {
-	cfg    *config.Config
-	logger logger.Logger
+	sessionService session.Service
+	userService    user.Service
+	cfg            *config.Config
+	logger         logger.Logger
 }
 
 // MiddlewareManager constructor
-func NewMiddlewareManager(cfg *config.Config, logger logger.Logger) *MiddlewareManager {
+func NewMiddlewareManager(sessionService session.Service, userService user.Service, cfg *config.Config, logger logger.Logger) *MiddlewareManager {
 	return &MiddlewareManager{
-		cfg:    cfg,
-		logger: logger,
+		sessionService: sessionService,
+		userService:    userService,
+		cfg:            cfg,
+		logger:         logger,
 	}
 }
