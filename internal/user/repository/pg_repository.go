@@ -25,7 +25,7 @@ func (r *userRepo) GetUsers(ctx context.Context, pagQuery *utils.PaginationQuery
 	defer span.Finish()
 
 	var numUsers int
-	if err := r.db.GetContext(ctx, &numUsers, getNumUsers); err != nil {
+	if err := r.db.GetContext(ctx, &numUsers, getNumUsersQuery); err != nil {
 		return nil, errors.Wrap(err, "userRepo.GetUsers.GetContext")
 	}
 
@@ -55,12 +55,12 @@ func (r *userRepo) Register(ctx context.Context, user *models.User) (*models.Use
 	return u, nil
 }
 
-func (r *userRepo) GetByID(ctx context.Context, UserID uuid.UUID) (*models.User, error) {
+func (r *userRepo) GetByID(ctx context.Context, userID uuid.UUID) (*models.User, error) {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "userRepo.GetByID")
 	defer span.Finish()
 
 	u := &models.User{}
-	if err := r.db.QueryRowxContext(ctx, getUserQuery, UserID).StructScan(u); err != nil {
+	if err := r.db.QueryRowxContext(ctx, getUserQuery, userID).StructScan(u); err != nil {
 		return nil, errors.Wrap(err, "userRepo.GetByID.StructScan")
 	}
 
@@ -77,4 +77,15 @@ func (r *userRepo) FindByEmail(ctx context.Context, email string) (*models.User,
 	}
 
 	return u, nil
+}
+
+func (r *userRepo) UpdateLastLogin(ctx context.Context, email string) error {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "userRepo.UpdateLastLogin")
+	defer span.Finish()
+
+	if _, err := r.db.ExecContext(ctx, updateUserLastLoginQuery, email); err != nil {
+		return errors.Wrap(err, "userRepo.UpdateLastLogin.ExecContext")
+	}
+
+	return nil
 }

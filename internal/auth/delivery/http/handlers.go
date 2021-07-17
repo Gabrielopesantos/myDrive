@@ -18,14 +18,16 @@ import (
 
 type authHandlers struct {
 	cfg            *config.Config
+	authService    auth.Service
 	userService    user.Service
 	sessionService session.Service
 	logger         logger.Logger
 }
 
-func NewAuthHandlers(cfg *config.Config, userService user.Service, sessionService session.Service, logger logger.Logger) auth.Handlers {
+func NewAuthHandlers(cfg *config.Config, authService auth.Service, userService user.Service, sessionService session.Service, logger logger.Logger) auth.Handlers {
 	return &authHandlers{
 		cfg:            cfg,
+		authService:    authService,
 		userService:    userService,
 		sessionService: sessionService,
 		logger:         logger,
@@ -47,13 +49,18 @@ func (h *authHandlers) Login() echo.HandlerFunc {
 			return c.JSON(httpErrors.ErrorResponse(err))
 		}
 
-		userWithToken, err := h.userService.Login(ctx, &models.User{
+		userWithToken, err := h.authService.Login(ctx, &models.User{
 			Email:    login.Email,
 			Password: login.Password,
 		})
 		if err != nil {
 			utils.LogResponseError(c, h.logger, err)
 			return c.JSON(httpErrors.ErrorResponse(err)) // 404?
+		}
+
+		if err = h.userService.UpdateLastLogin(ctx, userWithToken.User.Email); err != nil {
+			utils.LogResponseError(c, h.logger, err)
+			return c.JSON(http.StatusInternalServerError, httpErrors.NewInternalServerError(httpErrors.InternalServerError))
 		}
 
 		sess, err := h.sessionService.CreateSession(ctx, &models.Session{UserID: userWithToken.User.UserID}, h.cfg.Session.Expire)

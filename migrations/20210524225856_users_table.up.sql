@@ -17,7 +17,7 @@ CREATE TABLE users (
     about        VARCHAR(1024)                        DEFAULT '',
     avatar       VARCHAR(512),
     is_email_verified BOOLEAN                NOT NULL DEFAULT 'false',
-    last_login   TIMESTAMP(0),
+    last_login   TIMESTAMP WITH TIME ZONE             DEFAULT CURRENT_TIMESTAMP,
 
     created_at   TIMESTAMP WITH TIME ZONE    NOT NULL DEFAULT NOW(),
     updated_at   TIMESTAMP WITH TIME ZONE             DEFAULT CURRENT_TIMESTAMP

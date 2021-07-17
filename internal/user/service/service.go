@@ -43,33 +43,6 @@ func (s *userService) GetUsers(ctx context.Context, pagQuery *utils.PaginationQu
 	return s.userRepo.GetUsers(ctx, pagQuery)
 }
 
-func (s *userService) Login(ctx context.Context, user *models.User) (*models.UserWithToken, error) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "userService.Login")
-	defer span.Finish()
-
-	// Should be search by email
-	foundUser, err := s.userRepo.FindByEmail(ctx, user.Email)
-	if err != nil {
-		return nil, err
-	}
-
-	if err = foundUser.ComparePasswords(user.Password); err != nil {
-		return nil, httpErrors.NewUnauthorizedError(errors.Wrap(err, "userService.Login.ComparePasswords"))
-	}
-
-	foundUser.SanitizePassword()
-
-	token, err := utils.GenerateJWT(foundUser, s.cfg)
-	if err != nil {
-		return nil, httpErrors.NewInternalServerError(errors.Wrap(err, "userService.Login.GenerateJWT"))
-	}
-
-	return &models.UserWithToken{
-		User:  foundUser,
-		Token: token,
-	}, nil
-}
-
 func (s *userService) Register(ctx context.Context, user *models.User) (*models.UserWithToken, error) {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "userService.Register")
 	defer span.Finish()
@@ -124,4 +97,11 @@ func (s *userService) GetByID(ctx context.Context, userID uuid.UUID) (*models.Us
 
 func (s *userService) generateUserKey(userID string) string {
 	return fmt.Sprintf("%s: %s", basePrefix, userID)
+}
+
+func (s *userService) UpdateLastLogin(ctx context.Context, email string) error {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "userService.GetUsers")
+	defer span.Finish()
+
+	return s.userRepo.UpdateLastLogin(ctx, email)
 }

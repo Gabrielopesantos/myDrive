@@ -28,23 +28,23 @@ func NewAuthService(cfg *config.Config, userRepo user.Repository, logger logger.
 }
 
 func (s *authService) Login(ctx context.Context, user *models.User) (*models.UserWithToken, error) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "authUC.Login")
+	span, ctx := opentracing.StartSpanFromContext(ctx, "authService.Login")
 	defer span.Finish()
 
-	foundUser, err := s.userRepo.GetByID(ctx, user.UserID)
+	foundUser, err := s.userRepo.FindByEmail(ctx, user.Email)
 	if err != nil {
 		return nil, err
 	}
 
 	if err = foundUser.ComparePasswords(user.Password); err != nil {
-		return nil, httpErrors.NewInternalServerError(errors.Wrap(err, "authUC.Login.ComparePasswords"))
+		return nil, httpErrors.NewInternalServerError(errors.Wrap(err, "authService.Login.ComparePasswords"))
 	}
 
 	foundUser.SanitizePassword()
 
 	token, err := utils.GenerateJWT(foundUser, s.cfg)
 	if err != nil {
-		return nil, httpErrors.NewInternalServerError(errors.Wrap(err, "authUc.Login.GenerateJWTToken"))
+		return nil, httpErrors.NewInternalServerError(errors.Wrap(err, "authService.Login.GenerateJWTToken"))
 	}
 
 	return &models.UserWithToken{

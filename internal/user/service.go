@@ -14,5 +14,5 @@ type Service interface {
 	GetUsers(ctx context.Context, pagQuery *utils.PaginationQuery) ([]*models.User, error)
 	Register(ctx context.Context, user *models.User) (*models.UserWithToken, error)
 	GetByID(ctx context.Context, userID uuid.UUID) (*models.User, error)
-	Login(ctx context.Context, user *models.User) (*models.UserWithToken, error)
+	UpdateLastLogin(ctx context.Context, email string) error
 }
