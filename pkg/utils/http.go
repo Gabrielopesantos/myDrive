@@ -3,6 +3,7 @@ package utils
 import (
 	"context"
 	"github.com/gabrielopesantos/myDrive-api/config"
+	httpErrors "github.com/gabrielopesantos/myDrive-api/pkg/http_errors"
 	"github.com/gabrielopesantos/myDrive-api/pkg/logger"
 	"net/http"
 
@@ -52,6 +53,16 @@ func CreateSessionCookie(cfg *config.Config, session string) *http.Cookie {
 	}
 }
 
+// Delete Session Cookie
+func DeleteSessionCookie(c echo.Context, sessionName string) {
+	c.SetCookie(&http.Cookie{
+		Name:   sessionName,
+		Value:  "",
+		Path:   "/",
+		MaxAge: -1,
+	})
+}
+
 // UserCtxKey: Used for the user object in the context
 type UserCtxKey struct{}
 
@@ -71,9 +82,19 @@ func GetIPAddress(c echo.Context) string {
 }
 
 // Error response with logging error for echo context
-func LogResponseError(ctx echo.Context, logger logger.Logger, err error) {
+func ErrResponseWithLog(c echo.Context, logger logger.Logger, err error) error {
 	logger.Errorf(
 		"LogResponseError, RequestID: %s, IPAddress: %s, Error: %s",
-		GetRequestID(ctx), GetIPAddress(ctx), err,
+		GetRequestID(c), GetIPAddress(c), err,
+	)
+
+	return c.JSON(httpErrors.ErrorResponse(err))
+}
+
+// Error response with logging error for echo context
+func LogResponseError(c echo.Context, logger logger.Logger, err error) {
+	logger.Errorf(
+		"LogResponseError, RequestID: %s, IPAddress: %s, Error: %s",
+		GetRequestID(c), GetIPAddress(c), err,
 	)
 }

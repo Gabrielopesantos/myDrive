@@ -7,4 +7,5 @@ type Handlers interface {
 	GetUsers() echo.HandlerFunc
 	Register() echo.HandlerFunc
 	GetUserByID() echo.HandlerFunc
+	GetMe() echo.HandlerFunc
 }

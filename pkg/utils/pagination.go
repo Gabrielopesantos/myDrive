@@ -32,6 +32,10 @@ func (q *PaginationQuery) SetPage(pageParam string) error {
 	return nil
 }
 
+func (q *PaginationQuery) GetOrderBy() string {
+	return q.OrderBy
+}
+
 func (q *PaginationQuery) SetSize(sizeParam string) error {
 	if sizeParam == "" {
 		q.Size = defaultSize

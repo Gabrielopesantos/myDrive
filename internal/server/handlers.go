@@ -37,7 +37,7 @@ func (s *Server) MapHandlers(e *echo.Echo) error {
 
 	// Init handlers
 	uHandlers := userHttp.NewUsersHandlers(s.cfg, uService, sService, s.logger)
-	authHandlers := authHttp.NewAuthHandlers(s.cfg, uService, s.logger)
+	authHandlers := authHttp.NewAuthHandlers(s.cfg, uService, sService, s.logger)
 
 	// Init middleware
 	mw := apiMiddleware.NewMiddlewareManager(sService, uService, s.cfg, s.logger)

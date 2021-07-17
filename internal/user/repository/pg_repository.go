@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"fmt"
 	"github.com/gabrielopesantos/myDrive-api/pkg/utils"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
@@ -34,14 +33,8 @@ func (r *userRepo) GetUsers(ctx context.Context, pagQuery *utils.PaginationQuery
 		return []*models.User{}, nil
 	}
 
-	fmt.Printf("%+v", pagQuery)
 	var users = make([]*models.User, 0, numUsers)
-	if err := r.db.SelectContext(
-		ctx,
-		&users,
-		getAllUsersQuery,
-		pagQuery.OrderBy,
-	); err != nil {
+	if err := r.db.SelectContext(ctx, &users, getAllUsersQuery, pagQuery.GetOrderBy()); err != nil {
 		return nil, errors.Wrap(err, "userRepo.GetUsers.SelectContext")
 	}
 

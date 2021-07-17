@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"context"
-
 	httpErrors "github.com/gabrielopesantos/myDrive-api/pkg/http_errors"
 	"github.com/gabrielopesantos/myDrive-api/pkg/utils"
 	"github.com/labstack/echo/v4"

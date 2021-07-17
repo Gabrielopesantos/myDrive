@@ -5,7 +5,7 @@ import (
 	"github.com/gabrielopesantos/myDrive-api/internal/session"
 	httpErrors "github.com/gabrielopesantos/myDrive-api/pkg/http_errors"
 	"github.com/gabrielopesantos/myDrive-api/pkg/logger"
-	utils "github.com/gabrielopesantos/myDrive-api/pkg/utils"
+	"github.com/gabrielopesantos/myDrive-api/pkg/utils"
 	"net/http"
 
 	"github.com/gabrielopesantos/myDrive-api/internal/models"
@@ -45,7 +45,6 @@ func (h *userHandlers) GetUsers() echo.HandlerFunc {
 		users, err := h.userService.GetUsers(ctx, pagQuery)
 		if err != nil {
 			utils.LogResponseError(c, h.logger, err)
-
 			return c.JSON(httpErrors.ErrorResponse(err))
 		}
 
@@ -99,5 +98,21 @@ func (h *userHandlers) GetUserByID() echo.HandlerFunc {
 		}
 
 		return c.JSON(http.StatusOK, existingUser)
+	}
+}
+
+func (h *userHandlers) GetMe() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		span, _ := opentracing.StartSpanFromContext(utils.GetRequestCtx(c), "users.GetMe")
+		defer span.Finish()
+
+		user, ok := c.Get("user").(*models.User)
+
+		if !ok {
+			utils.LogResponseError(c, h.logger, httpErrors.NewUnauthorizedError(httpErrors.Unauthorized))
+			return c.JSON(http.StatusUnauthorized, httpErrors.NewUnauthorizedError(httpErrors.Unauthorized))
+		}
+
+		return c.JSON(http.StatusOK, user)
 	}
 }

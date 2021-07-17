@@ -5,7 +5,7 @@ import (
 	"github.com/gabrielopesantos/myDrive-api/internal/models"
 )
 
-// Auth UseCase Interface
-type UseCase interface {
+// Auth Service Interface
+type Service interface {
 	Login(ctx context.Context, user *models.User) (*models.UserWithToken, error)
 }

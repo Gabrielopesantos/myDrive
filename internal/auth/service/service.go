@@ -1,11 +1,11 @@
-package usecase
+package service
 
 import (
 	"context"
 	"github.com/gabrielopesantos/myDrive-api/config"
 	"github.com/gabrielopesantos/myDrive-api/internal/auth"
 	"github.com/gabrielopesantos/myDrive-api/internal/models"
-	usersRepo "github.com/gabrielopesantos/myDrive-api/internal/user/repository"
+	"github.com/gabrielopesantos/myDrive-api/internal/user"
 	httpErrors "github.com/gabrielopesantos/myDrive-api/pkg/http_errors"
 	"github.com/gabrielopesantos/myDrive-api/pkg/logger"
 	"github.com/gabrielopesantos/myDrive-api/pkg/utils"
@@ -13,25 +13,25 @@ import (
 	"github.com/pkg/errors"
 )
 
-type authUC struct {
-	cfg       *config.Config
-	usersRepo *usersRepo.UsersRepo
-	logger    logger.Logger
+type authService struct {
+	cfg      *config.Config
+	userRepo user.Repository
+	logger   logger.Logger
 }
 
-func NewAuthUC(cfg *config.Config, usersRepo *usersRepo.UsersRepo, logger logger.Logger) auth.UseCase {
-	return &authUC{
-		cfg:       cfg,
-		usersRepo: usersRepo,
-		logger:    logger,
+func NewAuthService(cfg *config.Config, userRepo user.Repository, logger logger.Logger) auth.Service {
+	return &authService{
+		cfg:      cfg,
+		userRepo: userRepo,
+		logger:   logger,
 	}
 }
 
-func (u *authUC) Login(ctx context.Context, user *models.User) (*models.UserWithToken, error) {
+func (s *authService) Login(ctx context.Context, user *models.User) (*models.UserWithToken, error) {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "authUC.Login")
 	defer span.Finish()
 
-	foundUser, err := u.usersRepo.GetByID(ctx, user.UserID)
+	foundUser, err := s.userRepo.GetByID(ctx, user.UserID)
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +42,7 @@ func (u *authUC) Login(ctx context.Context, user *models.User) (*models.UserWith
 
 	foundUser.SanitizePassword()
 
-	token, err := utils.GenerateJWT(foundUser, u.cfg)
+	token, err := utils.GenerateJWT(foundUser, s.cfg)
 	if err != nil {
 		return nil, httpErrors.NewInternalServerError(errors.Wrap(err, "authUc.Login.GenerateJWTToken"))
 	}

@@ -32,8 +32,16 @@ func (s *SessionService) CreateSession(ctx context.Context, session *models.Sess
 
 // Get session by ID
 func (s *SessionService) GetSessionByID(ctx context.Context, sessionID string) (*models.Session, error) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "SessionService.CreateSession")
+	span, ctx := opentracing.StartSpanFromContext(ctx, "SessionService.GetSessionByID")
 	defer span.Finish()
 
 	return s.redisRepo.GetSessionByID(ctx, sessionID)
+}
+
+// Delete session by ID
+func (s *SessionService) DeleteSessionByID(ctx context.Context, sessionID string) error {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "SessionService.DeleteSessionByID")
+	defer span.Finish()
+
+	return s.redisRepo.DeleteSessionByID(ctx, sessionID)
 }

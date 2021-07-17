@@ -54,14 +54,11 @@ func (r *sessionRedisRepo) CreateSession(ctx context.Context, session *models.Se
 	return sessionKey, nil
 }
 
-// GetSessionByID
 func (r *sessionRedisRepo) GetSessionByID(ctx context.Context, sessionID string) (*models.Session, error) {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "sessionRedisRepo.CreateSession")
 	defer span.Finish()
 
-	sessionKey := r.createKey(sessionID)
-
-	sessionBytes, err := r.redisClient.Get(ctx, sessionKey).Bytes()
+	sessionBytes, err := r.redisClient.Get(ctx, sessionID).Bytes()
 	if err != nil {
 		return nil, errors.Wrap(err, "sessionRedisRepo.GetSessionByID.redisClient.Get")
 	}
@@ -73,6 +70,17 @@ func (r *sessionRedisRepo) GetSessionByID(ctx context.Context, sessionID string)
 	return sess, nil
 }
 
+func (r *sessionRedisRepo) DeleteSessionByID(ctx context.Context, sessionID string) error {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "sessionRedisRepo.DeleteSessionByID")
+	defer span.Finish()
+
+	err := r.redisClient.Del(ctx, sessionID).Err()
+	if err != nil {
+		return errors.Wrap(err, "sessionRedisRepo.DeleteSessionByID")
+	}
+
+	return nil
+}
 func (r *sessionRedisRepo) createKey(sessionID string) string {
 	return fmt.Sprintf("%s: %s", r.basePrefix, sessionID)
 }
