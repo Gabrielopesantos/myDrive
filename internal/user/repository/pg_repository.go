@@ -41,20 +41,6 @@ func (r *userRepo) GetUsers(ctx context.Context, pagQuery *utils.PaginationQuery
 	return users, nil
 }
 
-func (r *userRepo) Register(ctx context.Context, user *models.User) (*models.User, error) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "userRepo.Register")
-	defer span.Finish()
-
-	u := &models.User{}
-	if err := r.db.QueryRowxContext(ctx, createUserQuery, &user.FirstName, &user.LastName, &user.Email,
-		&user.Password, &user.Role, &user.About, &user.Avatar,
-	).StructScan(u); err != nil {
-		return nil, errors.Wrap(err, "userRepo.Register.StructScan")
-	}
-
-	return u, nil
-}
-
 func (r *userRepo) GetByID(ctx context.Context, userID uuid.UUID) (*models.User, error) {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "userRepo.GetByID")
 	defer span.Finish()
@@ -62,18 +48,6 @@ func (r *userRepo) GetByID(ctx context.Context, userID uuid.UUID) (*models.User,
 	u := &models.User{}
 	if err := r.db.QueryRowxContext(ctx, getUserQuery, userID).StructScan(u); err != nil {
 		return nil, errors.Wrap(err, "userRepo.GetByID.StructScan")
-	}
-
-	return u, nil
-}
-
-func (r *userRepo) FindByEmail(ctx context.Context, email string) (*models.User, error) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "userRepo.FindByEmail")
-	defer span.Finish()
-
-	u := &models.User{}
-	if err := r.db.QueryRowxContext(ctx, findByEmailQuery, email).StructScan(u); err != nil {
-		return nil, errors.Wrap(err, "userRepo.FindByEmail.StructScan")
 	}
 
 	return u, nil

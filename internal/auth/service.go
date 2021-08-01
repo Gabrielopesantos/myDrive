@@ -7,5 +7,6 @@ import (
 
 // Auth Service Interface
 type Service interface {
+	Register(ctx context.Context, user *models.User) (*models.UserWithToken, error)
 	Login(ctx context.Context, user *models.User) (*models.UserWithToken, error)
 }

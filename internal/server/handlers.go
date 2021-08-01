@@ -5,6 +5,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 
 	authHttp "github.com/gabrielopesantos/myDrive-api/internal/auth/delivery/http"
+	authRepository "github.com/gabrielopesantos/myDrive-api/internal/auth/repository"
 	authService "github.com/gabrielopesantos/myDrive-api/internal/auth/service"
 	apiMiddleware "github.com/gabrielopesantos/myDrive-api/internal/middleware"
 	sessionRepository "github.com/gabrielopesantos/myDrive-api/internal/session/repository"
@@ -27,6 +28,7 @@ func (s *Server) MapHandlers(e *echo.Echo) error {
 	)
 	// Init repos
 	uRepo := usersRepository.NewUserRepository(s.db)
+	aRepo := authRepository.NewAuthRepository(s.db)
 
 	// Init Redis Repo
 	sRedisRepo := sessionRepository.NewSessionRedisRepo(s.redisClient, s.cfg)
@@ -35,7 +37,7 @@ func (s *Server) MapHandlers(e *echo.Echo) error {
 	// Init Services
 	uService := usersService.NewUserService(s.cfg, uRepo, uRedisRepo, s.logger)
 	sService := sessionService.NewSessionService(sRedisRepo, s.cfg)
-	aService := authService.NewAuthService(s.cfg, uRepo, s.logger)
+	aService := authService.NewAuthService(s.cfg, aRepo, s.logger)
 
 	// Init handlers
 	uHandlers := userHttp.NewUsersHandlers(s.cfg, uService, sService, s.logger)

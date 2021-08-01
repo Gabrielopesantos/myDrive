@@ -5,7 +5,6 @@ import (
 	"github.com/gabrielopesantos/myDrive-api/config"
 	"github.com/gabrielopesantos/myDrive-api/internal/auth"
 	"github.com/gabrielopesantos/myDrive-api/internal/models"
-	"github.com/gabrielopesantos/myDrive-api/internal/user"
 	httpErrors "github.com/gabrielopesantos/myDrive-api/pkg/http_errors"
 	"github.com/gabrielopesantos/myDrive-api/pkg/logger"
 	"github.com/gabrielopesantos/myDrive-api/pkg/utils"
@@ -15,23 +14,49 @@ import (
 
 type authService struct {
 	cfg      *config.Config
-	userRepo user.Repository
+	authRepo auth.Repository
 	logger   logger.Logger
 }
 
-func NewAuthService(cfg *config.Config, userRepo user.Repository, logger logger.Logger) auth.Service {
+func NewAuthService(cfg *config.Config, authRepo auth.Repository, logger logger.Logger) auth.Service {
 	return &authService{
 		cfg:      cfg,
-		userRepo: userRepo,
+		authRepo: authRepo,
 		logger:   logger,
 	}
+}
+
+func (s *authService) Register(ctx context.Context, user *models.User) (*models.UserWithToken, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "userService.Register")
+	defer span.Finish()
+
+	if err := user.PrepareCreate(); err != nil {
+		return nil, httpErrors.NewBadRequestError(errors.Wrap(err, "userService.Register.PrepareCreate"))
+	}
+
+	createdUser, err := s.authRepo.Register(ctx, user)
+	if err != nil {
+		return nil, err
+	}
+
+	createdUser.SanitizePassword()
+
+	token, err := utils.GenerateJWT(createdUser, s.cfg)
+	if err != nil {
+		return nil, httpErrors.NewInternalServerError(errors.Wrap(err, "userService.Register.GenerateJWT"))
+	}
+
+	return &models.UserWithToken{
+		User:  createdUser,
+		Token: token,
+	}, nil
 }
 
 func (s *authService) Login(ctx context.Context, user *models.User) (*models.UserWithToken, error) {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "authService.Login")
 	defer span.Finish()
 
-	foundUser, err := s.userRepo.FindByEmail(ctx, user.Email)
+	foundUser, err := s.authRepo.FindByEmail(ctx, user.Email)
 	if err != nil {
 		return nil, err
 	}

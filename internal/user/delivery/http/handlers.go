@@ -52,36 +52,6 @@ func (h *userHandlers) GetUsers() echo.HandlerFunc {
 	}
 }
 
-func (h *userHandlers) Register() echo.HandlerFunc {
-	return func(c echo.Context) error {
-		span, ctx := opentracing.StartSpanFromContext(utils.GetRequestCtx(c), "users.Register")
-		defer span.Finish()
-
-		newUser := &models.User{}
-		if err := utils.ReadRequest(c, newUser); err != nil {
-			utils.LogResponseError(c, h.logger, err)
-			return c.JSON(httpErrors.ErrorResponse(err))
-		}
-
-		createdUser, err := h.userService.Register(ctx, newUser)
-		if err != nil {
-			utils.LogResponseError(c, h.logger, err)
-			return c.JSON(httpErrors.ErrorResponse(err))
-		}
-
-		session, err := h.sessionService.CreateSession(
-			ctx,
-			&models.Session{
-				UserID: createdUser.User.UserID,
-			},
-			h.cfg.Session.Expire)
-
-		c.SetCookie(utils.CreateSessionCookie(h.cfg, session))
-
-		return c.JSON(http.StatusCreated, createdUser)
-	}
-}
-
 func (h *userHandlers) GetUserByID() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		span, ctx := opentracing.StartSpanFromContext(utils.GetRequestCtx(c), "users.GetUserByID")

@@ -6,12 +6,10 @@ import (
 	"github.com/gabrielopesantos/myDrive-api/config"
 	"github.com/gabrielopesantos/myDrive-api/internal/models"
 	"github.com/gabrielopesantos/myDrive-api/internal/user"
-	httpErrors "github.com/gabrielopesantos/myDrive-api/pkg/http_errors"
 	"github.com/gabrielopesantos/myDrive-api/pkg/logger"
 	utils "github.com/gabrielopesantos/myDrive-api/pkg/utils"
 	"github.com/google/uuid"
 	"github.com/opentracing/opentracing-go"
-	"github.com/pkg/errors"
 )
 
 const (
@@ -41,32 +39,6 @@ func (s *userService) GetUsers(ctx context.Context, pagQuery *utils.PaginationQu
 	defer span.Finish()
 
 	return s.userRepo.GetUsers(ctx, pagQuery)
-}
-
-func (s *userService) Register(ctx context.Context, user *models.User) (*models.UserWithToken, error) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "userService.Register")
-	defer span.Finish()
-
-	if err := user.PrepareCreate(); err != nil {
-		return nil, httpErrors.NewBadRequestError(errors.Wrap(err, "userService.Register.PrepareCreate"))
-	}
-
-	createdUser, err := s.userRepo.Register(ctx, user)
-	if err != nil {
-		return nil, err
-	}
-
-	createdUser.SanitizePassword()
-
-	token, err := utils.GenerateJWT(createdUser, s.cfg)
-	if err != nil {
-		return nil, httpErrors.NewInternalServerError(errors.Wrap(err, "userService.Register.GenerateJWT"))
-	}
-
-	return &models.UserWithToken{
-		User:  createdUser,
-		Token: token,
-	}, nil
 }
 
 func (s *userService) GetByID(ctx context.Context, userID uuid.UUID) (*models.User, error) {
