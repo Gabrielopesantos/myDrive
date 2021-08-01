@@ -7,8 +7,6 @@ services:
       restart: always
       ports:
         - 6379:6379
-      networks:
-        - my_network
 
     redis-commander:
       container_name: redis-commander
@@ -19,8 +17,6 @@ services:
         - REDIS_HOSTS=local:redis:6379:0
       ports:
         - 8081:8081
-      networks:
-        - my_network
 
     postgresql:
       image: postgres:13.3-alpine
@@ -34,8 +30,6 @@ services:
         POSTGRES_DB: users
       volumes:
         - ./pgdata/:/var/lib/postgresql/data
-      networks:
-        - my_network
 
     pgadminer4:
       container_name: pgadminer4
@@ -46,8 +40,6 @@ services:
         PGADMIN_DEFAULT_PASSWORD: email
       ports:
         - 80:80 # IF TLS IS DISABLED ELSE 443
-      networks:
-        - my_network
 
     prometheus:
       container_name: prometheus_container
@@ -63,8 +55,6 @@ services:
         - '--web.console.templates=/usr/share/prometheus/consoles'
       ports:
         - 9090:9090
-      networks:
-        - my_network
 
     node_exporter:
       container_name: node_exporter_container
@@ -72,8 +62,6 @@ services:
       restart: always
       ports:
         - 9101:9100
-      networks:
-        - my_network
 
     jaeger:
       container_name: jaeger_container
@@ -90,9 +78,3 @@ services:
         - 14268:14268
         - 14250:14250
         - 9411:9411
-      networks:
-        - my_network
-
-networks:
-  my_network:
-    driver: bridge
