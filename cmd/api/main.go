@@ -37,7 +37,7 @@ func main() {
 	appLogger.InitLogger()
 	appLogger.Infof("AppVersion: %s, LogLevel: %s, Mode: %s, SSL: %v", cfg.Server.AppVersion, cfg.Logger.Level, cfg.Server.Mode, cfg.Server.SSL)
 
-	psqlDB, err := postgres.NewPsqlDB()
+	psqlDB, err := postgres.NewPsqlDB(cfg)
 	if err != nil {
 		appLogger.Fatalf("Postgres init: %s", err)
 	} else {

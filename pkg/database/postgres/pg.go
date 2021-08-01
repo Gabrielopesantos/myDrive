@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"fmt"
+	"github.com/gabrielopesantos/myDrive-api/config"
 	"time"
 
 	_ "github.com/jackc/pgx/stdlib"
@@ -16,13 +17,13 @@ const (
 )
 
 // Return a Postgresql db instance
-func NewPsqlDB() (*sqlx.DB, error) {
+func NewPsqlDB(cfg *config.Config) (*sqlx.DB, error) {
 	dataSourceName := fmt.Sprintf("host=%s port=%s user=%s dbname=%s sslmode=disable password=%s",
-		"localhost",
-		"5432",
-		"gabriel",
-		"users",
-		"leirbag123",
+		cfg.Postgres.PostgresqlHost,
+		cfg.Postgres.PostgresqlPort,
+		cfg.Postgres.PostgresqlUser,
+		cfg.Postgres.PostgresqlDbname,
+		cfg.Postgres.PostgresqlPassword,
 	)
 
 	db, err := sqlx.Connect("pgx", dataSourceName)

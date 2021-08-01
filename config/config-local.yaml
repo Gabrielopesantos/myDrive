@@ -31,7 +31,6 @@ logger:
   Encoding: console # json
   Level: info
 
-
 postgres:
   PostgresqlHost: localhost
   PostgresqlPort: 5432
