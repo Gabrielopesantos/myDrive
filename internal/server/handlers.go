@@ -13,6 +13,7 @@ import (
 	userHttp "github.com/gabrielopesantos/myDrive-api/internal/user/delivery/http"
 	usersRepository "github.com/gabrielopesantos/myDrive-api/internal/user/repository"
 	usersService "github.com/gabrielopesantos/myDrive-api/internal/user/service"
+	filesHttp "github.com/gabrielopesantos/myDrive-api/internal/files/delivery/http"
 	"github.com/gabrielopesantos/myDrive-api/pkg/metric"
 )
 
@@ -27,24 +28,25 @@ func (s *Server) MapHandlers(e *echo.Echo) error {
 		s.cfg.Metrics.ServiceName,
 	)
 	// Init repos
-	uRepo := usersRepository.NewUserRepository(s.db)
-	aRepo := authRepository.NewAuthRepository(s.db)
+	userRepo := usersRepository.NewUserRepository(s.db)
+	authRepo := authRepository.NewAuthRepository(s.db)
 
 	// Init Redis Repo
-	sRedisRepo := sessionRepository.NewSessionRedisRepo(s.redisClient, s.cfg)
-	uRedisRepo := usersRepository.NewUserRedisRepo(s.redisClient)
+	sessionRedisRepo := sessionRepository.NewSessionRedisRepo(s.redisClient, s.cfg)
+	userRedisRepo := usersRepository.NewUserRedisRepo(s.redisClient)
 
 	// Init Services
-	uService := usersService.NewUserService(s.cfg, uRepo, uRedisRepo, s.logger)
-	sService := sessionService.NewSessionService(sRedisRepo, s.cfg)
-	aService := authService.NewAuthService(s.cfg, aRepo, s.logger)
+	userServ := usersService.NewUserService(s.cfg, userRepo, userRedisRepo, s.logger)
+	sessionServ := sessionService.NewSessionService(sessionRedisRepo, s.cfg)
+	authServ := authService.NewAuthService(s.cfg, authRepo, s.logger)
 
 	// Init handlers
-	uHandlers := userHttp.NewUsersHandlers(s.cfg, uService, sService, s.logger)
-	authHandlers := authHttp.NewAuthHandlers(s.cfg, aService, uService, sService, s.logger)
+	userHandlers := userHttp.NewUsersHandlers(s.cfg, userServ, sessionServ, s.logger)
+	authHandlers := authHttp.NewAuthHandlers(s.cfg, authServ, userServ, sessionServ, s.logger)
+	fileHandlers := filesHttp.NewFileHandlers(s.cfg, s.logger)
 
 	// Init middleware
-	mw := apiMiddleware.NewMiddlewareManager(sService, uService, s.cfg, s.logger)
+	mw := apiMiddleware.NewMiddlewareManager(sessionServ, userServ, s.cfg, s.logger)
 	e.Use(mw.RequestLoggerMiddleware)
 
 	// ?
@@ -67,11 +69,14 @@ func (s *Server) MapHandlers(e *echo.Echo) error {
 
 	v1 := e.Group("/api/v1")
 
-	usersGroup := v1.Group("/users")
-	userHttp.MapUserRoutes(usersGroup, uHandlers, mw)
+	userGroup := v1.Group("/users")
+	userHttp.MapUserRoutes(userGroup, userHandlers, mw)
 
 	authGroup := v1.Group("/auth")
 	authHttp.MapAuthRoutes(authGroup, authHandlers)
+
+	filesGroup := v1.Group("/files")
+	filesHttp.MapFileRoutes(filesGroup, fileHandlers, mw)
 
 	return nil
 }

@@ -3,6 +3,9 @@ package http
 import (
 	"github.com/gabrielopesantos/myDrive-api/config"
 	"github.com/gabrielopesantos/myDrive-api/pkg/logger"
+	"github.com/gabrielopesantos/myDrive-api/pkg/utils"
+	"github.com/labstack/echo/v4"
+	"github.com/opentracing/opentracing-go"
 )
 
 // Files handlers
@@ -25,10 +28,13 @@ func NewFileHandlers(cfg *config.Config, logger logger.Logger) *fileHandlers {
 //	}
 //}
 
-//func (h *fileHandlers) Insert() echo.HandlerFunc {
-//	return func(c echo.Context) error {
-//		span, ctx := opentracing.StartSpanFromContext(utils.GetRequestCtx(c), "fileHandlers.Insert")
-//		defer span.Finish()
-//
-//	}
-//}
+func (h *fileHandlers) Insert() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		span, ctx := opentracing.StartSpanFromContext(utils.GetRequestCtx(c), "fileHandlers.Insert")
+		defer span.Finish()
+
+		
+
+
+	}
+}

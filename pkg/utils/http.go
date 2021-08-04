@@ -53,7 +53,7 @@ func CreateSessionCookie(cfg *config.Config, session string) *http.Cookie {
 	}
 }
 
-// Delete Session Cookie
+// DeleteSessionCookie - Deletes session cookie
 func DeleteSessionCookie(c echo.Context, sessionName string) {
 	c.SetCookie(&http.Cookie{
 		Name:   sessionName,
