@@ -1,15 +1,17 @@
 package redis
 
 import (
+	"context"
 	"github.com/gabrielopesantos/myDrive-api/config"
 	"github.com/go-redis/redis/v8"
 	"time"
 )
 
 // Returns a new redis client
-func NewRedisClient(cfg *config.Config) *redis.Client {
+func NewRedisClient(cfg *config.Config) (*redis.Client, error) {
 	redisHost := cfg.Redis.RedisAddr
 
+	// ?
 	if redisHost == "" {
 		redisHost = ":6379"
 	}
@@ -23,5 +25,10 @@ func NewRedisClient(cfg *config.Config) *redis.Client {
 		DB:           cfg.Redis.DB,
 	})
 
-	return client
+	ctx := context.TODO() // ???
+	if _, err := client.Ping(ctx).Result(); err != nil {
+		return nil, err
+	}
+
+	return client, nil
 }

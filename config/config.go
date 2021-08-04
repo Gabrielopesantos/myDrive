@@ -17,6 +17,7 @@ type Config struct {
 	Logger   LoggerConfig
 	Metrics  Metrics
 	Jaeger   Jaeger
+	Minio   MinioConfig
 }
 
 // Server config struct
@@ -96,6 +97,15 @@ type Jaeger struct {
 	LogSpans    bool
 }
 
+// MinioConfig MinIO Client Options struct
+type MinioConfig struct {
+	Endpoint string
+	RootPassword string
+	RootUser string
+	UseSSL bool
+}
+
+
 // Load config file from given path
 func LoadConfig(filename string) (*viper.Viper, error) {
 	v := viper.New()
@@ -113,7 +123,6 @@ func LoadConfig(filename string) (*viper.Viper, error) {
 	return v, nil
 }
 
-//
 // Parse config file
 func ParseConfig(v *viper.Viper) (*Config, error) {
 	var c Config

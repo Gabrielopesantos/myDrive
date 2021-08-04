@@ -37,6 +37,14 @@ func main() {
 	appLogger.InitLogger()
 	appLogger.Infof("AppVersion: %s, LogLevel: %s, Mode: %s, SSL: %v", cfg.Server.AppVersion, cfg.Logger.Level, cfg.Server.Mode, cfg.Server.SSL)
 
+	//minioClient, err := minio.NewMinioClient(cfg)
+	//if err != nil {
+	//	appLogger.Fatalf("Minio init: %s", err)
+	//} else {
+	//	appLogger.Infof("Minio connected")
+	//}
+	//minioClient.
+
 	psqlDB, err := postgres.NewPsqlDB(cfg)
 	if err != nil {
 		appLogger.Fatalf("Postgres init: %s", err)
@@ -46,9 +54,13 @@ func main() {
 	defer psqlDB.Close()
 
 	// Redis
-	redisClient := redis.NewRedisClient(cfg)
+	redisClient, err := redis.NewRedisClient(cfg)
+	if err != nil {
+		appLogger.Fatalf("Redis failed to connect: %s", err)
+	} else {
+		appLogger.Infof("Redis connected, status %#v", redisClient.PoolStats())
+	}
 	defer redisClient.Close()
-	appLogger.Info("Redis connected")
 
 	// Jaeger
 	jaegerCfgInstance := jaegercfg.Configuration{

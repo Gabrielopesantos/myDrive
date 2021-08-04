@@ -36,7 +36,7 @@ postgres:
   PostgresqlPort: 5432
   PostgresqlUser: gabriel
   PostgresqlPassword: leirbag123
-  PostgresqlDbname: database
+  PostgresqlDbname: postgres
   PostgresqlSslmode: false
 
 redis:
@@ -58,3 +58,9 @@ jaeger:
   Host: localhost:6831
   ServiceName: REST_API
   LogSpans: false
+
+minio:
+  Endpoint: 127.0.0.1:9000
+  RootUser: gabriel
+  RootPassword: leirbag123
+  UseSSL: false
