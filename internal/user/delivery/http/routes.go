@@ -11,4 +11,5 @@ func MapUserRoutes(userGroup *echo.Group, h user.Handlers, mw *middleware.Middle
 	userGroup.GET("/:user_id", h.GetUserByID())
 	userGroup.Use(mw.AuthSessionMiddleware)
 	userGroup.GET("/me", h.GetMe())
+	userGroup.POST("/:user_id/avatar", h.UploadAvatar())
 }

@@ -5,6 +5,8 @@ import (
 	"github.com/gabrielopesantos/myDrive-api/config"
 	httpErrors "github.com/gabrielopesantos/myDrive-api/pkg/http_errors"
 	"github.com/gabrielopesantos/myDrive-api/pkg/logger"
+	"github.com/pkg/errors"
+	"mime/multipart"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -97,4 +99,37 @@ func LogResponseError(c echo.Context, logger logger.Logger, err error) {
 		"LogResponseError, RequestID: %s, IPAddress: %s, Error: %s",
 		GetRequestID(c), GetIPAddress(c), err,
 	)
+}
+
+func ReadImage(c echo.Context, field string) (*multipart.FileHeader, error) {
+
+	img, err := c.FormFile(field)
+	if err != nil {
+		return nil, err
+	}
+
+	// Check if content type of file is allowed
+	if err = CheckImageContentType(img); err != nil {
+		return nil, err
+	}
+
+	return img, nil
+}
+
+var allowedImageContentTypes = map[string]string{
+	"image/png":                "png",
+	"image/jpeg":               "jpeg",
+	"image/jpg":                "jpg",
+}
+
+
+func CheckImageContentType(fileContent *multipart.FileHeader) error {
+	contentType := fileContent.Header.Get("content-type")
+
+	_, ok := allowedImageContentTypes[contentType]
+	if !ok {
+		return errors.New("file content type not allowed") // Should be an error
+	}
+
+	return  nil
 }

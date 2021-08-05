@@ -86,3 +86,20 @@ func (h *userHandlers) GetMe() echo.HandlerFunc {
 		return c.JSON(http.StatusOK, user)
 	}
 }
+
+func (h *userHandlers) UploadAvatar() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		span, _ := opentracing.StartSpanFromContext(utils.GetRequestCtx(c), "users.GetMe")
+		defer span.Finish()
+
+		bucket := c.QueryParam("bucket")
+		user_id, err := uuid.Parse(c.Param("user_id"))
+		if err != nil {
+			utils.LogResponseError(c, h.logger, err)
+			return c.JSON(httpErrors.ErrorResponse(err))
+		}
+
+		image, err := utils.ReadImage(c, "file")
+
+	}
+}
