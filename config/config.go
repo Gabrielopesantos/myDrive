@@ -17,7 +17,7 @@ type Config struct {
 	Logger   LoggerConfig
 	Metrics  Metrics
 	Jaeger   Jaeger
-	Minio   MinioConfig
+	Minio    MinioConfig
 }
 
 // Server config struct
@@ -99,12 +99,11 @@ type Jaeger struct {
 
 // MinioConfig MinIO Client Options struct
 type MinioConfig struct {
-	Endpoint string
+	Endpoint     string
 	RootPassword string
-	RootUser string
-	UseSSL bool
+	RootUser     string
+	UseSSL       bool
 }
-
 
 // Load config file from given path
 func LoadConfig(filename string) (*viper.Viper, error) {

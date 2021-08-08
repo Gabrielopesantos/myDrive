@@ -1,11 +1,13 @@
 package http
 
 import (
+	"bytes"
 	"github.com/gabrielopesantos/myDrive-api/config"
 	"github.com/gabrielopesantos/myDrive-api/internal/session"
 	httpErrors "github.com/gabrielopesantos/myDrive-api/pkg/http_errors"
 	"github.com/gabrielopesantos/myDrive-api/pkg/logger"
 	"github.com/gabrielopesantos/myDrive-api/pkg/utils"
+	"io"
 	"net/http"
 
 	"github.com/gabrielopesantos/myDrive-api/internal/models"
@@ -89,17 +91,56 @@ func (h *userHandlers) GetMe() echo.HandlerFunc {
 
 func (h *userHandlers) UploadAvatar() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		span, _ := opentracing.StartSpanFromContext(utils.GetRequestCtx(c), "users.GetMe")
+		span, ctx := opentracing.StartSpanFromContext(utils.GetRequestCtx(c), "users.GetMe")
 		defer span.Finish()
 
 		bucket := c.QueryParam("bucket")
-		user_id, err := uuid.Parse(c.Param("user_id"))
+		userID, err := uuid.Parse(c.Param("user_id"))
 		if err != nil {
 			utils.LogResponseError(c, h.logger, err)
 			return c.JSON(httpErrors.ErrorResponse(err))
 		}
 
 		image, err := utils.ReadImage(c, "file")
+		if err != nil {
+			utils.LogResponseError(c, h.logger, err)
+			c.JSON(httpErrors.ErrorResponse(err))
+		}
 
+		file, err := image.Open()
+		if err != nil {
+			utils.LogResponseError(c, h.logger, err)
+			c.JSON(httpErrors.ErrorResponse(err))
+		}
+		defer file.Close()
+
+		binaryImage := bytes.NewBuffer(nil)
+		if _, err = io.Copy(binaryImage, file); err != nil {
+			utils.LogResponseError(c, h.logger, err)
+			c.JSON(httpErrors.ErrorResponse(err))
+		}
+		defer file.Close()
+
+		contentType, err := utils.CheckReturnImageFileContentType(binaryImage.Bytes())
+		if err != nil {
+			utils.LogResponseError(c, h.logger, err)
+			c.JSON(httpErrors.ErrorResponse(err))
+		}
+
+		reader := bytes.NewReader(binaryImage.Bytes())
+
+		updatedUser, err := h.userService.UploadAvatar(ctx, userID, models.UploadInput{
+			File:        reader,
+			Name:        image.Filename,
+			Size:        image.Size,
+			ContentType: contentType,
+			BucketName:  bucket,
+		})
+		if err != nil {
+			utils.LogResponseError(c, h.logger, err)
+			c.JSON(httpErrors.ErrorResponse(err))
+		}
+
+		return c.JSON(http.StatusOK, updatedUser)
 	}
 }

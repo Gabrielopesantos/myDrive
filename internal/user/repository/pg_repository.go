@@ -63,3 +63,16 @@ func (r *userRepo) UpdateLastLogin(ctx context.Context, email string) error {
 
 	return nil
 }
+
+func (r *userRepo) Update(ctx context.Context, user *models.User) (*models.User, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "userRepo.Update")
+	defer span.Finish()
+
+	u := &models.User{}
+	if err := r.db.GetContext(ctx, u, updateUserQuery, &user.FirstName, &user.LastName, &user.Email,
+		&user.Role, &user.About, &user.EmailVerified, &user.Avatar, &user.UserID); err != nil {
+		return nil, errors.Wrap(err, "userRepo.Update.GetContext")
+	}
+
+	return u, nil
+}

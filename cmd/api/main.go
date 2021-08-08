@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/gabrielopesantos/myDrive-api/pkg/database/minio"
 	postgres "github.com/gabrielopesantos/myDrive-api/pkg/database/postgres"
 	redis "github.com/gabrielopesantos/myDrive-api/pkg/database/redis"
 	utils "github.com/gabrielopesantos/myDrive-api/pkg/utils"
@@ -37,13 +38,13 @@ func main() {
 	appLogger.InitLogger()
 	appLogger.Infof("AppVersion: %s, LogLevel: %s, Mode: %s, SSL: %v", cfg.Server.AppVersion, cfg.Logger.Level, cfg.Server.Mode, cfg.Server.SSL)
 
-	//minioClient, err := minio.NewMinioClient(cfg)
-	//if err != nil {
-	//	appLogger.Fatalf("Minio init: %s", err)
-	//} else {
-	//	appLogger.Infof("Minio connected")
-	//}
-	//minioClient.
+	minioClient, err := minio.NewMinioClient(cfg)
+	if err != nil {
+		appLogger.Fatalf("Minio init: %s", err)
+	} else {
+		appLogger.Infof("Minio connected")
+	}
+	// Close?
 
 	psqlDB, err := postgres.NewPsqlDB(cfg)
 	if err != nil {
@@ -90,7 +91,7 @@ func main() {
 
 	appLogger.Info("Opentracing connected")
 
-	srv := server.NewServer(cfg, psqlDB, redisClient, appLogger)
+	srv := server.NewServer(cfg, psqlDB, redisClient, minioClient, appLogger)
 	if err = srv.Run(); err != nil {
 		log.Fatal(err)
 	}

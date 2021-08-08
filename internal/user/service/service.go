@@ -6,10 +6,12 @@ import (
 	"github.com/gabrielopesantos/myDrive-api/config"
 	"github.com/gabrielopesantos/myDrive-api/internal/models"
 	"github.com/gabrielopesantos/myDrive-api/internal/user"
+	httpErrors "github.com/gabrielopesantos/myDrive-api/pkg/http_errors"
 	"github.com/gabrielopesantos/myDrive-api/pkg/logger"
 	utils "github.com/gabrielopesantos/myDrive-api/pkg/utils"
 	"github.com/google/uuid"
 	"github.com/opentracing/opentracing-go"
+	"github.com/pkg/errors"
 )
 
 const (
@@ -21,14 +23,16 @@ type userService struct {
 	cfg       *config.Config
 	userRepo  user.Repository
 	redisRepo user.RedisRepository
+	minioRepo user.MinioRepository
 	logger    logger.Logger
 }
 
-func NewUserService(cfg *config.Config, userRepo user.Repository, redisRepo user.RedisRepository, logger logger.Logger) user.Service {
+func NewUserService(cfg *config.Config, userRepo user.Repository, redisRepo user.RedisRepository, minioRepo user.MinioRepository, logger logger.Logger) user.Service {
 	return &userService{
 		cfg:       cfg,
 		userRepo:  userRepo,
 		redisRepo: redisRepo,
+		minioRepo: minioRepo,
 		logger:    logger,
 	}
 }
@@ -76,4 +80,33 @@ func (s *userService) UpdateLastLogin(ctx context.Context, email string) error {
 	defer span.Finish()
 
 	return s.userRepo.UpdateLastLogin(ctx, email)
+}
+
+func (s *userService) UploadAvatar(ctx context.Context, userID uuid.UUID, input models.UploadInput) (*models.User, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "userService.UploadAvatar")
+	defer span.Finish()
+
+	// Call PutObject
+	uploadInfo, err := s.minioRepo.PutObject(ctx, input)
+	if err != nil {
+		return nil, httpErrors.NewInternalServerError(errors.Wrap(err, "userService.UploadAvatar.PutObject"))
+	}
+
+	avatarURL := s.generateMinioURL(input.BucketName, uploadInfo.Key)
+
+	updatedUser, err := s.userRepo.Update(ctx, &models.User{
+		UserID: userID,
+		Avatar: &avatarURL,
+	})
+	if err != nil {
+		_ = s.minioRepo.RemoveObject(ctx, uploadInfo.Bucket, uploadInfo.Key) // Might also fail
+		return nil, err
+	}
+
+	updatedUser.SanitizePassword()
+	return updatedUser, nil
+}
+
+func (s *userService) generateMinioURL(bucket, key string) string {
+	return fmt.Sprintf("%s/minio/%s/%s", s.cfg.Minio.Endpoint, bucket, key)
 }

@@ -10,7 +10,7 @@ server:
   SSL: true
   CtxDefaultTimeout: 12
   CSRF: true
-  Debug: true
+  Debug: false
 
 
 cookie:
@@ -36,7 +36,7 @@ postgres:
   PostgresqlPort: 5432
   PostgresqlUser: gabriel
   PostgresqlPassword: leirbag123
-  PostgresqlDbname: postgres
+  PostgresqlDbname: users
   PostgresqlSslmode: false
 
 redis:

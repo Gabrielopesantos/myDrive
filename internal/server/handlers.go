@@ -31,12 +31,15 @@ func (s *Server) MapHandlers(e *echo.Echo) error {
 	userRepo := usersRepository.NewUserRepository(s.db)
 	authRepo := authRepository.NewAuthRepository(s.db)
 
+	// MinIO Storage
+	userMinioStorage := usersRepository.NewUserMinioRepo(s.minioClient)
+
 	// Init Redis Repo
 	sessionRedisRepo := sessionRepository.NewSessionRedisRepo(s.redisClient, s.cfg)
 	userRedisRepo := usersRepository.NewUserRedisRepo(s.redisClient)
 
 	// Init Services
-	userServ := usersService.NewUserService(s.cfg, userRepo, userRedisRepo, s.logger)
+	userServ := usersService.NewUserService(s.cfg, userRepo, userRedisRepo, userMinioStorage, s.logger)
 	sessionServ := sessionService.NewSessionService(sessionRedisRepo, s.cfg)
 	authServ := authService.NewAuthService(s.cfg, authRepo, s.logger)
 

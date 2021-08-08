@@ -101,6 +101,7 @@ func LogResponseError(c echo.Context, logger logger.Logger, err error) {
 	)
 }
 
+// ReadImage Reads image from Request Body and checks if its type is valid
 func ReadImage(c echo.Context, field string) (*multipart.FileHeader, error) {
 
 	img, err := c.FormFile(field)
@@ -116,20 +117,13 @@ func ReadImage(c echo.Context, field string) (*multipart.FileHeader, error) {
 	return img, nil
 }
 
-var allowedImageContentTypes = map[string]string{
-	"image/png":                "png",
-	"image/jpeg":               "jpeg",
-	"image/jpg":                "jpg",
-}
+func CheckReturnImageFileContentType(fileContent []byte) (string, error) {
+	contentType := http.DetectContentType(fileContent)
 
-
-func CheckImageContentType(fileContent *multipart.FileHeader) error {
-	contentType := fileContent.Header.Get("content-type")
-
-	_, ok := allowedImageContentTypes[contentType]
+	extension, ok := allowedImageContentTypes[contentType]
 	if !ok {
-		return errors.New("file content type not allowed") // Should be an error
+		return "", errors.New("file content type not allowed")
 	}
 
-	return  nil
+	return  extension, nil
 }

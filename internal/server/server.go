@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"github.com/go-redis/redis/v8"
+	"github.com/minio/minio-go/v7"
 	"net/http"
 	"os"
 	"os/signal"
@@ -25,15 +26,17 @@ type Server struct {
 	cfg         *config.Config
 	db          *sqlx.DB
 	redisClient *redis.Client
+	minioClient *minio.Client
 	logger      logger.Logger
 }
 
-func NewServer(cfg *config.Config, db *sqlx.DB, redisClient *redis.Client, logger logger.Logger) *Server {
+func NewServer(cfg *config.Config, db *sqlx.DB, redisClient *redis.Client, minioClient *minio.Client, logger logger.Logger) *Server {
 	return &Server{
 		echo:        echo.New(),
 		cfg:         cfg,
 		db:          db,
 		redisClient: redisClient,
+		minioClient: minioClient,
 		logger:      logger,
 	}
 }
