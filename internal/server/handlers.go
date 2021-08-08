@@ -7,13 +7,15 @@ import (
 	authHttp "github.com/gabrielopesantos/myDrive-api/internal/auth/delivery/http"
 	authRepository "github.com/gabrielopesantos/myDrive-api/internal/auth/repository"
 	authService "github.com/gabrielopesantos/myDrive-api/internal/auth/service"
+	filesHttp "github.com/gabrielopesantos/myDrive-api/internal/files/delivery/http"
+	filesRepository "github.com/gabrielopesantos/myDrive-api/internal/files/repository"
+	filesService "github.com/gabrielopesantos/myDrive-api/internal/files/service"
 	apiMiddleware "github.com/gabrielopesantos/myDrive-api/internal/middleware"
 	sessionRepository "github.com/gabrielopesantos/myDrive-api/internal/session/repository"
 	sessionService "github.com/gabrielopesantos/myDrive-api/internal/session/service"
 	userHttp "github.com/gabrielopesantos/myDrive-api/internal/user/delivery/http"
 	usersRepository "github.com/gabrielopesantos/myDrive-api/internal/user/repository"
 	usersService "github.com/gabrielopesantos/myDrive-api/internal/user/service"
-	//filesHttp "github.com/gabrielopesantos/myDrive-api/internal/files/delivery/http"
 	"github.com/gabrielopesantos/myDrive-api/pkg/metric"
 )
 
@@ -33,6 +35,7 @@ func (s *Server) MapHandlers(e *echo.Echo) error {
 
 	// MinIO Storage
 	userMinioStorage := usersRepository.NewUserMinioRepo(s.minioClient)
+	filesMinioRepo := filesRepository.NewFileMinioRepo(s.minioClient)
 
 	// Init Redis Repo
 	sessionRedisRepo := sessionRepository.NewSessionRedisRepo(s.redisClient, s.cfg)
@@ -42,11 +45,12 @@ func (s *Server) MapHandlers(e *echo.Echo) error {
 	userServ := usersService.NewUserService(s.cfg, userRepo, userRedisRepo, userMinioStorage, s.logger)
 	sessionServ := sessionService.NewSessionService(sessionRedisRepo, s.cfg)
 	authServ := authService.NewAuthService(s.cfg, authRepo, s.logger)
+	filesServ := filesService.NewFileService(s.cfg, filesMinioRepo, s.logger)
 
 	// Init handlers
 	userHandlers := userHttp.NewUsersHandlers(s.cfg, userServ, sessionServ, s.logger)
 	authHandlers := authHttp.NewAuthHandlers(s.cfg, authServ, userServ, sessionServ, s.logger)
-	//fileHandlers := filesHttp.NewFileHandlers(s.cfg, s.logger)
+	fileHandlers := filesHttp.NewFileHandlers(s.cfg, filesServ, s.logger)
 
 	// Init middleware
 	mw := apiMiddleware.NewMiddlewareManager(sessionServ, userServ, s.cfg, s.logger)
@@ -78,8 +82,8 @@ func (s *Server) MapHandlers(e *echo.Echo) error {
 	authGroup := v1.Group("/auth")
 	authHttp.MapAuthRoutes(authGroup, authHandlers)
 
-	//filesGroup := v1.Group("/files")
-	//filesHttp.MapFileRoutes(filesGroup, fileHandlers, mw)
-	//
+	filesGroup := v1.Group("/files")
+	filesHttp.MapFileRoutes(filesGroup, fileHandlers, mw)
+
 	return nil
 }

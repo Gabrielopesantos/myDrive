@@ -127,3 +127,14 @@ func CheckReturnImageFileContentType(fileContent []byte) (string, error) {
 
 	return  extension, nil
 }
+
+// ReadFile Same as ReadImage but without file extension restrictions
+func ReadFile(c echo.Context, field string) (*multipart.FileHeader, error) {
+
+	file, err := c.FormFile(field)
+	if err != nil {
+		return nil, err
+	}
+
+	return file, nil
+}

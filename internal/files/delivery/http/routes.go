@@ -10,5 +10,5 @@ import (
 func MapFileRoutes(group *echo.Group, h files.Handlers, mw *middleware.MiddlewareManager) {
 	group.Use(mw.AuthSessionMiddleware)
 	//group.GET("/", handlers.GetFiles())
-	group.POST("/", h.Insert())
+	group.POST("", h.Insert())
 }

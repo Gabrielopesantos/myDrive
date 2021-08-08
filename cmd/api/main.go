@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/gabrielopesantos/myDrive-api/pkg/database/minio"
+	minio "github.com/gabrielopesantos/myDrive-api/pkg/database/minio"
 	postgres "github.com/gabrielopesantos/myDrive-api/pkg/database/postgres"
 	redis "github.com/gabrielopesantos/myDrive-api/pkg/database/redis"
 	utils "github.com/gabrielopesantos/myDrive-api/pkg/utils"
@@ -44,7 +44,16 @@ func main() {
 	} else {
 		appLogger.Infof("Minio connected")
 	}
-	// Close?
+
+	// Avatars bucket
+	if err = minio.CreateBucket(minioClient, "avatars"); err != nil {
+		appLogger.Fatal("Failed to create bucket avatars")
+	}
+
+	// Files bucket
+	if err = minio.CreateBucket(minioClient, "files"); err != nil {
+		appLogger.Fatal("Failed to create bucket avatars")
+	}
 
 	psqlDB, err := postgres.NewPsqlDB(cfg)
 	if err != nil {

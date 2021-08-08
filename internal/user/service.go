@@ -9,7 +9,7 @@ import (
 	"github.com/gabrielopesantos/myDrive-api/internal/models"
 )
 
-// Users Service interface
+// Service  Users service interface
 type Service interface {
 	GetUsers(ctx context.Context, pagQuery *utils.PaginationQuery) ([]*models.User, error)
 	GetByID(ctx context.Context, userID uuid.UUID) (*models.User, error)
