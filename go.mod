@@ -10,6 +10,7 @@ require (
 	github.com/go-playground/validator/v10 v10.4.1
 	github.com/go-redis/redis/v8 v8.10.0
 	github.com/gofrs/uuid v3.2.0+incompatible // indirect
+	github.com/golang/mock v1.6.0 // indirect
 	github.com/google/uuid v1.3.0
 	github.com/jackc/fake v0.0.0-20150926172116-812a484cc733 // indirect
 	github.com/jackc/pgx v3.6.2+incompatible
@@ -26,6 +27,7 @@ require (
 	github.com/rs/xid v1.3.0 // indirect
 	github.com/shopspring/decimal v0.0.0-20200227202807-02e2044944cc // indirect
 	github.com/spf13/viper v1.3.2
+	github.com/stretchr/testify v1.7.0 // indirect
 	github.com/uber/jaeger-client-go v2.29.1+incompatible
 	github.com/uber/jaeger-lib v2.4.1+incompatible
 	go.uber.org/zap v1.17.0

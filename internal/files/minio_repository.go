@@ -1,3 +1,4 @@
+//go:generate mockgen -source minio_repository.go -destination mock/minio_repository_mock.go -package mock
 package files
 
 import (
