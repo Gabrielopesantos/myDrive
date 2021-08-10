@@ -37,7 +37,7 @@ func (r *authRepo) FindByEmail(ctx context.Context, email string) (*models.User,
 
 	u := &models.User{}
 	if err := r.db.QueryRowxContext(ctx, findByEmailQuery, email).StructScan(u); err != nil {
-		return nil, errors.Wrap(err, "userRepo.FindByEmail.StructScan")
+		return nil, errors.Wrap(err, "authRepo.FindByEmail.StructScan")
 	}
 
 	return u, nil

@@ -26,11 +26,11 @@ func (r *fileMinioRepo) PutObject(ctx context.Context, file models.File) (*minio
 	defer span.Finish()
 
 	options := minio.PutObjectOptions{
-		ContentType:  file.File.ContentType,
+		ContentType:  file.ContentType,
 		UserMetadata: map[string]string{"x-amz-acl": "public-read"},
 	}
 
-	uploadInfo, err := r.client.PutObject(ctx, file.File.BucketName, r.generateFilename(&file), file.File.File, file.File.Size, options)
+	uploadInfo, err := r.client.PutObject(ctx, file.BucketName, r.generateFilename(&file), file.File, file.Size, options)
 	if err != nil {
 		return &uploadInfo, errors.Wrap(err, "fileMinioRepo.PutObject.PutObject")
 	}
@@ -63,5 +63,5 @@ func (r *fileMinioRepo) PutObject(ctx context.Context, file models.File) (*minio
 //}
 //
 func (r *fileMinioRepo) generateFilename(file *models.File) string {
-	return fmt.Sprintf("%s-%s-%s", file.FileOwnerId, file.FileId, file.File.Name)
+	return fmt.Sprintf("%s-%s-%s", file.FileOwnerId, file.FileId, file.Name)
 }

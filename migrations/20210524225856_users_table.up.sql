@@ -27,13 +27,14 @@ CREATE TABLE users (
 -- https://github.com/golang-migrate/migrate/blob/v4.6.2/database/postgres/TUTORIAL.md
 
 CREATE TABLE files (
-    file_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    file_id UUID PRIMARY KEY,
     file_owner_id UUID NOT NULL REFERENCES users (user_id),
-    filename VARCHAR(100) NOT NULL CHECK (filename <> ''),
-    description VARCHAR(1024) NOT NULL CHECK (description <> ''),
-    extension VARCHAR(4) NOT NULL,
+    file VARCHAR(256) NOT NULL CHECK (file <> ''),
+    filename VARCHAR(256) NOT NULL CHECK (filename <> ''),
+    description VARCHAR(1024) DEFAULT '',
+    extension VARCHAR(32) NOT NULL,
     size FLOAT NOT NULL,
-    tags VARCHAR(512),
+    tags VARCHAR(256) DEFAULT '',
 
     created_at   TIMESTAMP WITH TIME ZONE    NOT NULL DEFAULT NOW(),
     updated_at   TIMESTAMP WITH TIME ZONE             DEFAULT CURRENT_TIMESTAMP

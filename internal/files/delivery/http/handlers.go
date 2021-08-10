@@ -73,7 +73,7 @@ func (h *fileHandlers) Insert() echo.HandlerFunc {
 		uploadedFile := &models.File{
 			FileId:      fileID,
 			FileOwnerId: userID,
-			File: &models.UploadInput{
+			UploadInput: &models.UploadInput{
 				File:        reader,
 				Name:        file.Filename,
 				Size:        file.Size,

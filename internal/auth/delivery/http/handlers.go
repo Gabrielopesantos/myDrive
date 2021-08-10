@@ -1,6 +1,5 @@
 package http
 
-import "C"
 import (
 	"github.com/gabrielopesantos/myDrive-api/config"
 	"github.com/gabrielopesantos/myDrive-api/internal/auth"
@@ -85,7 +84,7 @@ func (h *authHandlers) Login() echo.HandlerFunc {
 		})
 		if err != nil {
 			utils.LogResponseError(c, h.logger, err)
-			return c.JSON(httpErrors.ErrorResponse(err)) // 404?
+			return c.JSON(httpErrors.ErrorResponse(err)) // 404 if account does not exist and 401 if fields were wrong?
 		}
 
 		if err = h.userService.UpdateLastLogin(ctx, userWithToken.User.Email); err != nil {
