@@ -2,6 +2,7 @@ package http
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/gabrielopesantos/myDrive-api/config"
 	"github.com/gabrielopesantos/myDrive-api/internal/files"
 	"github.com/gabrielopesantos/myDrive-api/internal/models"
@@ -30,11 +31,26 @@ func NewFileHandlers(cfg *config.Config, fileService files.Service, logger logge
 	}
 }
 
-//func (h *fileHandlers) GetFiles() echo.HandlerFunc {
-//	return func(c echo.Context) error {
-//		//return
-//	}
-//}
+func (h *fileHandlers) GetFileById() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		span, ctx := opentracing.StartSpanFromContext(utils.GetRequestCtx(c), "fileHandlers.GetFileById")
+		defer span.Finish()
+
+		fileId := c.Param("file_id")
+
+		parsedFileId, err := uuid.Parse(fileId)
+		if err != nil {
+			// Invalid file id
+			utils.LogResponseError(c, h.logger, err)
+			return c.JSON(httpErrors.ErrorResponse(err))
+		}
+
+		file, err := h.fileService.GetFileById(ctx, parsedFileId)
+		fmt.Println(file, err)
+
+		return c.JSON(http.StatusOK, "Boas")
+	}
+}
 
 func (h *fileHandlers) Insert() echo.HandlerFunc {
 	return func(c echo.Context) error {

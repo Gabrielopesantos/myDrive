@@ -4,8 +4,10 @@ package files
 import (
 	"context"
 	"github.com/gabrielopesantos/myDrive-api/internal/models"
+	"github.com/google/uuid"
 )
 
 type Repository interface {
 	RecordFileInsertion(ctx context.Context, file *models.File) (*models.File, error)
+	CheckFileExistence(ctx context.Context, fileID uuid.UUID) (*models.File, error)
 }

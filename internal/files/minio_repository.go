@@ -9,6 +9,6 @@ import (
 
 type MinioRepository interface {
 	PutObject(ctx context.Context, file models.File) (*minio.UploadInfo, error)
-	//GetObject(ctx context.Context, bucket string, fileName string) (*minio.Object, error)
+	GetObject(ctx context.Context, fileURL string) (*minio.Object, error)
 	//RemoveObject(ctx context.Context, bucket string, fileName string) error
 }

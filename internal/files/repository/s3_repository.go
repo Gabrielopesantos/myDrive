@@ -8,6 +8,7 @@ import (
 	"github.com/minio/minio-go/v7"
 	"github.com/opentracing/opentracing-go"
 	"github.com/pkg/errors"
+	"strings"
 )
 
 // Files Minio S3 Compatible Repository
@@ -38,19 +39,20 @@ func (r *fileMinioRepo) PutObject(ctx context.Context, file models.File) (*minio
 	return &uploadInfo, nil
 }
 
-//// GetObject Download file to Minio Server
-//func (r *userMinioRepo) GetObject(ctx context.Context, bucket string, fileName string) (*minio.Object, error) {
-//	span, ctx := opentracing.StartSpanFromContext(ctx, "userMinioRepo.PutObject")
-//	defer span.Finish()
-//
-//	object, err := r.client.GetObject(ctx, bucket, fileName, minio.GetObjectOptions{})
-//	if err != nil {
-//		return nil, errors.Wrap(err, "userMinioRepo.GetObject.GetObject")
-//	}
-//
-//	return object, nil
-//}
-//
+//GetObject Download file to Minio Server
+func (r *fileMinioRepo) GetObject(ctx context.Context, fileURL string) (*minio.Object, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "fileMinioRepo.PutObject")
+	defer span.Finish()
+
+	fileURLParts := strings.Split(fileURL, "/")
+	object, err := r.client.GetObject(ctx, fileURLParts[2], fileURLParts[3], minio.GetObjectOptions{})
+	if err != nil {
+		return nil, errors.Wrap(err, "userMinioRepo.GetObject.GetObject")
+	}
+
+	return object, nil
+}
+
 //// RemoveObject Remove object from Minio Server
 //func (r *userMinioRepo) RemoveObject(ctx context.Context, bucket string, fileName string) error {
 //

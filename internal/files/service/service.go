@@ -8,6 +8,7 @@ import (
 	"github.com/gabrielopesantos/myDrive-api/internal/models"
 	httpErrors "github.com/gabrielopesantos/myDrive-api/pkg/http_errors"
 	"github.com/gabrielopesantos/myDrive-api/pkg/logger"
+	"github.com/google/uuid"
 	"github.com/opentracing/opentracing-go"
 	"github.com/pkg/errors"
 )
@@ -26,6 +27,28 @@ func NewFileService(cfg *config.Config, fileRepo files.Repository, fileMinioRepo
 		fileMinioRepo: fileMinioRepo,
 		logger:        logger,
 	}
+}
+
+func (s *fileService) GetFileById(ctx context.Context, fileID uuid.UUID) (*models.File, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "userService.GetUsers")
+	defer span.Finish()
+
+	// Verify is there is a file with that ID (Maybe first check redis)
+
+	// Else check db and save in redis
+	fileData, err := s.fileRepo.CheckFileExistence(ctx, fileID)
+	if err != nil {
+		return nil, errors.Wrap(err, "Check")
+	}
+
+	fileData.UploadInput.File, err = s.fileMinioRepo.GetObject(ctx, fileData.BucketURL)
+	if err != nil {
+		return nil, errors.Wrap(err, "Check")
+	}
+
+	// Add to redis
+
+	return fileData, nil
 }
 
 func (s *fileService) Insert(ctx context.Context, file *models.File) (*models.File, error) {
