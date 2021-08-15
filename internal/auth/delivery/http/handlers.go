@@ -33,6 +33,15 @@ func NewAuthHandlers(cfg *config.Config, authService auth.Service, userService u
 	}
 }
 
+// Register godoc
+// @Summary Register a new user
+// @Description register new user, returns user and token
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param user body models.User true "User data"
+// @Success 201 {object} models.UserWithToken
+// @Router /auth/register [post]
 func (h *authHandlers) Register() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		span, ctx := opentracing.StartSpanFromContext(utils.GetRequestCtx(c), "users.Register")

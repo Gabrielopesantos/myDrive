@@ -1,9 +1,7 @@
 package server
 
 import (
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
-
+	"github.com/gabrielopesantos/myDrive-api/docs"
 	authHttp "github.com/gabrielopesantos/myDrive-api/internal/auth/delivery/http"
 	authRepository "github.com/gabrielopesantos/myDrive-api/internal/auth/repository"
 	authService "github.com/gabrielopesantos/myDrive-api/internal/auth/service"
@@ -17,6 +15,9 @@ import (
 	usersRepository "github.com/gabrielopesantos/myDrive-api/internal/user/repository"
 	usersService "github.com/gabrielopesantos/myDrive-api/internal/user/service"
 	"github.com/gabrielopesantos/myDrive-api/pkg/metric"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
+	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
 func (s *Server) MapHandlers(e *echo.Echo) error {
@@ -57,6 +58,9 @@ func (s *Server) MapHandlers(e *echo.Echo) error {
 	mw := apiMiddleware.NewMiddlewareManager(sessionServ, userServ, s.cfg, s.logger)
 	e.Use(mw.RequestLoggerMiddleware)
 
+	docs.SwaggerInfo.Title = "myDrive API" // ?
+	e.GET("/swagger/*", echoSwagger.WrapHandler)
+
 	// ?
 	e.Use(middleware.RecoverWithConfig(middleware.RecoverConfig{
 		StackSize:         1 << 10,
@@ -71,9 +75,11 @@ func (s *Server) MapHandlers(e *echo.Echo) error {
 	e.Use(middleware.Secure())        // Ver
 	e.Use(middleware.BodyLimit("2M")) // Change to add files
 
+
 	if s.cfg.Server.Debug {
 		e.Use(mw.DebugMiddleware)
 	}
+
 
 	v1 := e.Group("/api/v1")
 

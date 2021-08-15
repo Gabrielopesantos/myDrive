@@ -19,6 +19,13 @@ import (
 	"github.com/gabrielopesantos/myDrive-api/pkg/logger"
 )
 
+// @title myDrive API
+// @version 0.0.1
+// @description Project for educational purposes
+// @contact.name Gabriel Santos
+// @contact.url https://github.com/gabrielopesantos/
+// @BasePath /api/v1
+
 func main() {
 	log.Println("Starting API server")
 
