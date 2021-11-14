@@ -31,6 +31,17 @@ func NewFileHandlers(cfg *config.Config, fileService files.Service, logger logge
 	}
 }
 
+func (h *fileHandlers) GetUserFiles() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		span, _ := opentracing.StartSpanFromContext(utils.GetRequestCtx(c), "fileHandlers.GetFileById")
+		defer span.Finish()
+
+		userID := c.Get("uid")
+
+		return c.JSON(http.StatusOK, "Poggers")
+	}
+}
+
 func (h *fileHandlers) GetFileById() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		span, ctx := opentracing.StartSpanFromContext(utils.GetRequestCtx(c), "fileHandlers.GetFileById")
