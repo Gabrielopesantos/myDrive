@@ -23,7 +23,7 @@
                 "tags": [
                     "Auth"
                 ],
-                "summary": "Register new user",
+                "summary": "Register a new user",
                 "parameters": [
                     {
                         "description": "User data",

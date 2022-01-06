@@ -61,7 +61,7 @@ paths:
           description: Created
           schema:
             $ref: '#/definitions/models.UserWithToken'
-      summary: Register new user
+      summary: Register a new user
       tags:
       - Auth
 swagger: "2.0"

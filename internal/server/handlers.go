@@ -80,7 +80,6 @@ func (s *Server) MapHandlers(e *echo.Echo) error {
 		e.Use(mw.DebugMiddleware)
 	}
 
-
 	v1 := e.Group("/api/v1")
 
 	userGroup := v1.Group("/users")

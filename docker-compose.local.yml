@@ -2,8 +2,9 @@ version: "3.8"
 
 services:
     redis:
-      image: redis:6.2.4-alpine
+      image: redis:6.2.5-alpine
       container_name: redis
+      hostname: redis
       restart: always
       ports:
         - "6379:6379"
@@ -11,7 +12,7 @@ services:
     redis-commander:
       container_name: redis-commander
       hostname: redis-commander
-      image: rediscommander/redis-commander:latest
+      image: rediscommander/redis-commander
       restart: always
       environment:
         - REDIS_HOSTS=local:redis:6379:0
@@ -19,8 +20,9 @@ services:
         - "8081:8081"
 
     postgresql:
-      image: postgres:13.3-alpine
+      image: postgres:13.4-alpine
       container_name: postgesql
+      hostname: postgesql
       ports:
         - "5432:5432"
       restart: always
@@ -29,7 +31,7 @@ services:
         POSTGRES_PASSWORD: leirbag123
         POSTGRES_DB: users
       volumes:
-        - ./pgdata/:/var/lib/postgresql/data
+        - db-data:/var/lib/postgresql/data
 
     pgadminer4:
       container_name: pgadminer4
@@ -39,7 +41,7 @@ services:
         PGADMIN_DEFAULT_EMAIL: email@email.com
         PGADMIN_DEFAULT_PASSWORD: email
       ports:
-        - "80:80" # IF TLS IS DISABLED ELSE 443
+        - "80:80"
 
     prometheus:
       container_name: prometheus_container
@@ -65,7 +67,7 @@ services:
 
     jaeger:
       container_name: jaeger_container
-      image: jaegertracing/all-in-one:latest
+      image: jaegertracing/all-in-one
       restart: always
       environment:
         - COLLECTOR_ZIPKIN_HTTP_PORT=9411
@@ -78,7 +80,7 @@ services:
         - "14268:14268"
         - "14250:14250"
         - "9411:9411"
-  
+
     minio:
       container_name: minio
       image: minio/minio
@@ -90,3 +92,6 @@ services:
         - MINIO_ROOT_USER=gabriel
         - MINIO_ROOT_PASSWORD=leirbag123
       command: server /data --console-address ":9001"
+
+volumes:
+  db-data:
