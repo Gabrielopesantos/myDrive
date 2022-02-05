@@ -3,6 +3,9 @@ package http
 import (
 	"bytes"
 	"fmt"
+	"io"
+	"net/http"
+
 	"github.com/gabrielopesantos/myDrive-api/config"
 	"github.com/gabrielopesantos/myDrive-api/internal/files"
 	"github.com/gabrielopesantos/myDrive-api/internal/models"
@@ -12,8 +15,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/opentracing/opentracing-go"
-	"io"
-	"net/http"
 )
 
 // fileHandlers
@@ -36,9 +37,9 @@ func (h *fileHandlers) GetUserFiles() echo.HandlerFunc {
 		span, _ := opentracing.StartSpanFromContext(utils.GetRequestCtx(c), "fileHandlers.GetFileById")
 		defer span.Finish()
 
-		userID := c.Get("uid")
+		// userID := c.Get("uid")
 
-		return c.JSON(http.StatusOK, "Poggers")
+		return c.JSON(http.StatusOK, "")
 	}
 }
 

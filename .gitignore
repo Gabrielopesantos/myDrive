@@ -19,3 +19,5 @@ vendor/
 pgdata
 .vscode
 .idea
+**/setup_aws_credentials
+.python-version
