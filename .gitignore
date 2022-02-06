@@ -16,7 +16,6 @@ vendor/
 
 # others?
 .env
-pgdata
 .vscode
 .idea
 **/setup_aws_credentials

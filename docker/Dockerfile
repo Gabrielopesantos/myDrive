@@ -1,24 +1,26 @@
-FROM golang:1.16-alpine as build
-
-ENV config=docker
+FROM golang:1.17-alpine as builder
 
 WORKDIR /app
 
-COPY ./ /app
+COPY go.mod ./
+COPY go.sum ./
 
 RUN go mod download
 
-FROM golang:1.16-alpine as runner
+COPY ./ ./
 
-COPY --from=builder ./app ./app
+RUN GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" -o server /app/cmd/api/main.go
 
-RUN go get github.com/githubnemo/CompileDaemon
+# 'scratch' image not working
+FROM golang:1.17-alpine
 
-WORKDIR /app
-ENV config=docker
+# ENV config=docker
+
+COPY --from=builder /app/config /config
+COPY --from=builder /app/server /server
 
 EXPOSE 5000
 EXPOSE 5555
 EXPOSE 7070
 
-ENTRYPOINT CompileDeamon --build="go build cmd/api/main.go" --comand=./main
+ENTRYPOINT [ "/server" ]
