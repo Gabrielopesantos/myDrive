@@ -9,10 +9,9 @@ RUN go mod download
 
 COPY ./ ./
 
-RUN GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" -o server /app/cmd/api/main.go
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" -o server /app/cmd/api/main.go
 
-# 'scratch' image not working
-FROM golang:1.17-alpine
+FROM scratch
 
 # ENV config=docker
 
