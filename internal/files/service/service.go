@@ -9,6 +9,7 @@ import (
 	httpErrors "github.com/gabrielopesantos/myDrive-api/pkg/http_errors"
 	"github.com/gabrielopesantos/myDrive-api/pkg/logger"
 	"github.com/google/uuid"
+	"github.com/minio/minio-go/v7"
 	"github.com/opentracing/opentracing-go"
 	"github.com/pkg/errors"
 )
@@ -70,6 +71,18 @@ func (s *fileService) Insert(ctx context.Context, file *models.File) (*models.Fi
 	//fileInsertion.File = nil // Does this clean?
 
 	return fileInsertion, nil
+}
+
+func (s *fileService) RetrieveObjectFromBucket(ctx context.Context, file *models.File) (*minio.Object, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "userService.GetUsers")
+	defer span.Finish()
+
+    object, err := s.fileMinioRepo.GetObject(ctx, file.BucketURL)
+    if err != nil {
+        return nil, httpErrors.NewInternalServerError(errors.Wrap(err, "fileSErvice.RetrieveObjectFromBucket.GetObject"))
+    }
+
+    return object, nil
 }
 
 func (s *fileService) generateMinioURL(bucket, key string) string {

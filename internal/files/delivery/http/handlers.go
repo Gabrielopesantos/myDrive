@@ -2,8 +2,8 @@ package http
 
 import (
 	"bytes"
-	"fmt"
 	"io"
+    "os"
 	"net/http"
 
 	"github.com/gabrielopesantos/myDrive-api/config"
@@ -14,6 +14,7 @@ import (
 	"github.com/gabrielopesantos/myDrive-api/pkg/utils"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
+	"github.com/minio/minio-go/v7"
 	"github.com/opentracing/opentracing-go"
 )
 
@@ -56,9 +57,18 @@ func (h *fileHandlers) GetFileById() echo.HandlerFunc {
 		}
 
 		file, err := h.fileService.GetFileById(ctx, parsedFileId)
-		fmt.Println(file, err)
 
-		return c.JSON(http.StatusOK, "Boas")
+		object, err := h.fileService.RetrieveObjectFromBucket(ctx, file)
+		if err != nil {
+			return c.JSON(httpErrors.ErrorResponse(err))
+		}
+
+        filePath, err := saveObjectTmp(file, object)
+		if err != nil {
+			return c.JSON(httpErrors.ErrorResponse(err))
+		}
+
+		return c.File(filePath)
 	}
 }
 
@@ -117,4 +127,17 @@ func (h *fileHandlers) Insert() echo.HandlerFunc {
 
 		return c.JSON(http.StatusOK, uploadInfo)
 	}
+}
+
+func saveObjectTmp(file *models.File, object *minio.Object) (string, error) {
+
+    localFile, err := os.Create("/tmp/" + file.Name)
+    if err != nil {
+        return "", err
+    }
+    if _, err = io.Copy(localFile, object); err != nil {
+        return "", err
+    }
+
+    return "/tmp/" + file.Name, nil
 }
