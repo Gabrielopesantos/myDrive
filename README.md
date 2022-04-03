@@ -1,5 +1,5 @@
-# API
-
+# MyDrive - Backend
+MyDrive is an application for file storage and sharing
 
 ##  References:
 

@@ -5,7 +5,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// Map Auth routes
+// MapAuthRoutes REST endpoints available from Auth service
 func MapAuthRoutes(authGroup *echo.Group, h auth.Handlers) {
 	authGroup.POST("/register", h.Register())
 	authGroup.POST("/login", h.Login())

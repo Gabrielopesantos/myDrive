@@ -37,8 +37,6 @@ func (h *fileHandlers) GetUserFiles() echo.HandlerFunc {
 		span, _ := opentracing.StartSpanFromContext(utils.GetRequestCtx(c), "fileHandlers.GetFileById")
 		defer span.Finish()
 
-		// userID := c.Get("uid")
-
 		return c.JSON(http.StatusOK, "")
 	}
 }

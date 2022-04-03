@@ -72,9 +72,8 @@ func (s *Server) MapHandlers(e *echo.Echo) error {
 	e.Use(mw.MetricsMiddleware(metrics))
 
 	// ?
-	e.Use(middleware.Secure())        // Ver
+	e.Use(middleware.Secure())
 	e.Use(middleware.BodyLimit("2M")) // Change to add files
-
 
 	if s.cfg.Server.Debug {
 		e.Use(mw.DebugMiddleware)
