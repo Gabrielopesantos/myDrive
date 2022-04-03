@@ -1,12 +1,13 @@
 package main
 
 import (
+	"log"
+	"os"
+
 	minio "github.com/gabrielopesantos/myDrive-api/pkg/database/minio"
 	postgres "github.com/gabrielopesantos/myDrive-api/pkg/database/postgres"
 	redis "github.com/gabrielopesantos/myDrive-api/pkg/database/redis"
 	utils "github.com/gabrielopesantos/myDrive-api/pkg/utils"
-	"log"
-	"os"
 
 	"github.com/opentracing/opentracing-go"
 	"github.com/uber/jaeger-client-go"
